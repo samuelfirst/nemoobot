@@ -7,7 +7,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    project_folder = os.path.expanduser('~/Desktop/Python/ne-telegram-bot')  # adjust as appropriate
+    project_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     load_dotenv(os.path.join(project_folder, '.env.dev'))
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
     try:
