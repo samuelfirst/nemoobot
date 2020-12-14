@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Log in to My Site</h2>
+  <h2>Log in to Ne Telegram Bot</h2>
   {% if form.errors %}
-    <p style="color: red">Your username and password didn't match. Please try again.</p>
+    <div class="alert alert-danger" role="alert">
+      Your username and password didn't match. Please try again.
+    </div>
   {% endif %}
   <form method="post">
     {% csrf_token %}
@@ -13,7 +15,9 @@
         {{ field.label_tag }}<br>
         {{ field }}<br>
         {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
         {% endfor %}
         {% if field.help_text %}
           <p><small style="color: grey">{{ field.help_text }}</small></p>
@@ -21,6 +25,6 @@
       </p>
     {% endfor %}
     <button type="submit">Log in</button>
-    <a href="/signup">New to My Site? Sign up</a>
+    <a href="/signup">New to Ne Telegram Bot? Sign up</a>
   </form>
 {% endblock %}

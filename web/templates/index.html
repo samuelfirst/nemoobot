@@ -4,6 +4,6 @@
   {% if user.username %}
     <h2>Welcome, {{ user.username }}!</h2>
   {% else %}
-    <h2>Welcome!<br>Please login or signup!</h2>
+    <h2>Welcome!<br>Please <a href="{% url 'login'%}">login</a> or <a href="{% url 'signup'%}">sign up</a>!</h2>
   {% endif %}
 {% endblock %}
