@@ -1,7 +1,27 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+import requests
 
+from .models import Token
+
+CLIENT_ID = "cj6u5ko0kn9bpdgajxrbz5ircahgff"
+CLIENT_SECRET = "0cfbh9t6kzawybnddevbrw84e84bha"
+REDIRECT_URL = "http://localhost:8000/connect_to_twitch"
+
+
+def get_access_token_by_code(code):
+    url = (
+        "https://id.twitch.tv/oauth2/token"
+        f"?client_id={CLIENT_ID}"
+        f"&client_secret={CLIENT_SECRET}"
+        f"&code={code}"
+        "&grant_type=authorization_code"
+        f"&redirect_uri={REDIRECT_URL}"
+    )
+    res = requests.post(url)
+    token = res.json()["access_token"]
+    return token
 
 
 def index(request):
@@ -21,3 +41,13 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
+
+
+def connect_to_twicth(request):
+    code = request.GET.get('code')
+    token = get_access_token_by_code(code)
+    user = request.user
+    Token(access_token=token, user=user).save()
+    return redirect('index')
+
+
