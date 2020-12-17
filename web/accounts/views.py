@@ -8,7 +8,7 @@ from .models import Token
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URL = os.getenv('REDIRECT_URL')
+TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
 
 
 def get_access_token_by_code(code):
