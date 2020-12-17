@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -5,9 +6,9 @@ import requests
 
 from .models import Token
 
-CLIENT_ID = "cj6u5ko0kn9bpdgajxrbz5ircahgff"
-CLIENT_SECRET = "0cfbh9t6kzawybnddevbrw84e84bha"
-REDIRECT_URL = "http://localhost:8000/connect_to_twitch"
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+REDIRECT_URL = os.getenv('REDIRECT_URL')
 
 
 def get_access_token_by_code(code):
