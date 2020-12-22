@@ -11,18 +11,21 @@ CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
 
 
-def get_access_token_by_code(code):
+def get_token_by_code(code):
     url = (
         "https://id.twitch.tv/oauth2/token"
         f"?client_id={CLIENT_ID}"
         f"&client_secret={CLIENT_SECRET}"
         f"&code={code}"
         "&grant_type=authorization_code"
-        f"&redirect_uri={REDIRECT_URL}"
+        f"&redirect_uri={TWITCH_REDIRECT_URL}"
     )
     res = requests.post(url)
-    token = res.json()["access_token"]
-    return token
+    token_data = res.json()
+    access_token = token_data['access_token']
+    refresh_token = token_data['refresh_token']
+    expires_in = token_data['expires_in']
+    return access_token, refresh_token, expires_in
 
 
 def index(request):
@@ -46,9 +49,15 @@ def signup(request):
 
 def connect_to_twicth(request):
     code = request.GET.get('code')
-    token = get_access_token_by_code(code)
+    access_token, refresh_token, expires_in = get_token_by_code(code)
     user = request.user
-    Token(access_token=token, user=user).save()
+    token = Token(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_in=expires_in,
+                user=user
+    )
+    token.save()
     return redirect('index')
 
 
