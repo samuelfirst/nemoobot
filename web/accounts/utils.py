@@ -1,19 +1,14 @@
-import os
-
+from django.conf import settings
 import requests
-
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
 
 
 def get_token_by_code(code):
     params = {
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': settings.TWITCH_CLIENT_ID,
+        'client_secret': settings.TWITCH_CLIENT_SECRET,
         'code': code,
         'grant_type': 'authorization_code',
-        'redirect_uri': TWITCH_REDIRECT_URL,
+        'redirect_uri': settings.TWITCH_REDIRECT_URL,
 
     }
     url = "https://id.twitch.tv/oauth2/token"
