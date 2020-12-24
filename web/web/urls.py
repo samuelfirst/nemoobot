@@ -16,5 +16,6 @@ urlpatterns = [
     path(
         'connect_to_twitch/',
         accounts_views.connect_to_twicth,
-        name='connect_to_twitch')
+        name='connect_to_twitch'),
+    path('profile/', accounts_views.profile, name='profile'),
 ]

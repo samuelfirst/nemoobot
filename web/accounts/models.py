@@ -1,5 +1,15 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+
+    twitch_username = models.CharField(max_length=100, blank=True)
+    twitch_user_id = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.username
 
 
 class Token(models.Model):

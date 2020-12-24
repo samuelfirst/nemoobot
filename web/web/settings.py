@@ -118,6 +118,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -126,3 +127,7 @@ STATIC_URL = "/static/"
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
+
+TWITCH_CLIENT_ID = os.getenv('CLIENT_ID')
+TWITCH_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
