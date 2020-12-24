@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
 
 from .models import Token
 from .utils import get_token_by_code
 from .forms import CustomUserCreationForm
+from .tasks import (
+    set_twitch_username_and_id_to_user, refresh_access_token
+)
 
 
 def index(request):
@@ -37,6 +39,10 @@ def connect_to_twicth(request):
                 user=user
     )
     token.save()
+
+    set_twitch_username_and_id_to_user(user.id)
+    countdown = token.expires_in - 10
+    refresh_access_token.apply_async((token.id,), countdown=countdown)
     return redirect('index')
 
 
