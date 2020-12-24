@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
+from rest_framework import viewsets
 
-from .models import Token
+from .models import Token, User
 from .utils import get_token_by_code
 from .forms import CustomUserCreationForm
 from .tasks import (
     set_twitch_username_and_id_to_user, refresh_access_token
 )
+from .serializers import UserSerializer
 
 
 def index(request):
@@ -48,3 +50,8 @@ def connect_to_twicth(request):
 
 def profile(request):
     return render(request, 'profile.html')
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

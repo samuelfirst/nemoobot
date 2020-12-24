@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from rest_framework import routers
+
 from accounts import views as accounts_views
+
+router = routers.DefaultRouter()
+router.register(r'users', accounts_views.UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,5 +23,6 @@ urlpatterns = [
         accounts_views.connect_to_twicth,
         name='connect_to_twitch'),
     path('profile/', accounts_views.profile, name='profile'),
-    path('api/v1/', include('rest_framework.urls')),
+    path('api/v1/', include(router.urls)),
+    path('api/v1/', include('rest_framework.urls', namespace='rest_framework')),
 ]
