@@ -18,4 +18,5 @@ urlpatterns = [
         accounts_views.connect_to_twicth,
         name='connect_to_twitch'),
     path('profile/', accounts_views.profile, name='profile'),
+    path('api/v1/', include('rest_framework.urls')),
 ]
