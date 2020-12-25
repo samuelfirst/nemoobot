@@ -4,7 +4,7 @@ from rest_framework import viewsets
 
 from .models import Token, User
 from .utils import get_token_by_code
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .tasks import (
     set_twitch_username_and_id_to_user, refresh_access_token
 )
@@ -49,6 +49,10 @@ def connect_to_twicth(request):
 
 
 def profile(request):
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
     return render(request, 'profile.html')
 
 
