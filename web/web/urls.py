@@ -7,6 +7,7 @@ from accounts import views as accounts_views
 
 router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
+router.register(r'tokens', accounts_views.TokenViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

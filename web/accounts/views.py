@@ -8,7 +8,7 @@ from .forms import CustomUserCreationForm
 from .tasks import (
     set_twitch_username_and_id_to_user, refresh_access_token
 )
-from .serializers import UserSerializer
+from .serializers import UserSerializer, TokenSerializer
 
 
 def index(request):
@@ -55,3 +55,8 @@ def profile(request):
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class TokenViewSet(viewsets.ModelViewSet):
+    queryset = Token.objects.all()
+    serializer_class = TokenSerializer
