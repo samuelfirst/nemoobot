@@ -17,6 +17,7 @@ class Token(models.Model):
     access_token = models.CharField(max_length=40)
     refresh_token = models.CharField(max_length=80)
     expires_in = models.IntegerField()
+    expires_time = models.IntegerField()
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
