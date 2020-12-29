@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    'rest_framework'
+    'rest_framework',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -140,8 +141,13 @@ TWITCH_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# Celery settings
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = os.getenv('CELERY_ACCEPT_CONTENT').split(' ')
+CELERY_TASK_SERIALIZER = os.getenv('CELERY_TASK_SERIALIZER')
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_ENABLE_UTC = True
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
