@@ -5,9 +5,7 @@ from rest_framework import viewsets
 from .models import Token, User
 from .utils import get_token_by_code
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .tasks import (
-    set_twitch_username_and_id_to_user, refresh_access_token
-)
+from .tasks import set_twitch_username_and_id_to_user
 from .serializers import UserSerializer, TokenSerializer
 
 
@@ -32,19 +30,19 @@ def signup(request):
 
 def connect_to_twicth(request):
     code = request.GET.get('code')
-    access_token, refresh_token, expires_in = get_token_by_code(code)
+    access_token, refresh_token, expires_in, expires_time = get_token_by_code(code)
     user = request.user
     token = Token(
                 access_token=access_token,
                 refresh_token=refresh_token,
                 expires_in=expires_in,
+                expires_time=expires_time,
                 user=user
     )
     token.save()
 
-    set_twitch_username_and_id_to_user(user.id)
-    countdown = token.expires_in - 10
-    refresh_access_token.apply_async((token.id,), countdown=countdown)
+    set_twitch_username_and_id_to_user.delay(user.id)
+
     return redirect('index')
 
 

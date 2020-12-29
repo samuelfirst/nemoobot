@@ -1,3 +1,4 @@
+import time
 from django.conf import settings
 from celery import shared_task
 import requests
@@ -41,10 +42,18 @@ def refresh_access_token(token_id):
 
     access_token = res['access_token']
     expires_in = res['expires_in']
+    expires_time = expires_in + int(time.time())
 
     token.access_token = access_token
     token.expires_in = expires_in
+    token.expires_time = expires_time
     token.save()
 
-    countdown = token.expires_in - 10
-    refresh_access_token.apply_async((token.id,), countdown=countdown)
+
+@shared_task
+def check_twitch_access_token_freshness():
+    tokens = Token.objects.all()
+    for token in tokens:
+        freshness_time = token.expires_time - int(time.time())
+        if freshness_time < 60:
+            refresh_access_token.apply_async((token.id,))
