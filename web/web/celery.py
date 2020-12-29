@@ -11,4 +11,14 @@ app = Celery('web')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
+app.conf.task_routes = {'accounts.tasks.*': {'queue': 'accounts'}}
+
 app.autodiscover_tasks()
+
+# celery beat tasks
+app.conf.beat_schedule = {
+    "check-access-token-freshness": {
+        "task": "accounts.tasks.check_twitch_access_token_freshness",
+        "schedule": 60.0,
+    },
+}
