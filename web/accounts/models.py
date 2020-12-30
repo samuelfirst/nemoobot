@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.postgres.fields import ArrayField, HStoreField
 from django.contrib.auth.models import AbstractUser
 
 
@@ -25,3 +26,21 @@ class Token(models.Model):
 
     def __str__(self):
         return self.access_token
+
+
+class Setting(models.Model):
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    default_commands = ArrayField(
+        models.CharField(max_length=50, blank=True),
+    )
+    custom_commands = models.JSONField(default=list)
+    antispam = ArrayField(
+        models.CharField(max_length=50, blank=True),
+    )
+
+    def __str__(self):
+        return self.user.username
