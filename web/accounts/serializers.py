@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, Token
+from .models import User, Token, Setting
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -19,4 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'twitch_username', 'twitch_user_id', 'token',
+        ]
+
+
+class SettingSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Setting
+        fields = [
+            'user', 'default_commands', 'custom_commands', 'antispam'
         ]
