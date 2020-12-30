@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Token
+from .models import User, Token, Setting
 
 
 class TokenInline(admin.TabularInline):
@@ -32,6 +32,16 @@ class CustomUserAdmin(UserAdmin):
     inlines = (TokenInline, )
     fieldsets = UserAdmin.fieldsets + (
             ('Twitch', {'fields': ('twitch_username', 'twitch_user_id')}),
+    )
+
+
+@admin.register(Setting)
+class SettingAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('User', {'fields': ('user',)}),
+        ('Settings', {'fields': (
+            'default_commands', 'custom_commands', 'antispam'
+        )}),
     )
 
 
