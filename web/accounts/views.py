@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from rest_framework import viewsets
 
-from .models import Token, User
+from .models import Token, User, Setting
 from .utils import get_token_by_code
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .tasks import set_twitch_username_and_id_to_user
-from .serializers import UserSerializer, TokenSerializer
+from .serializers import UserSerializer, TokenSerializer, SettingSerializer
 
 
 def index(request):
@@ -62,3 +62,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class TokenViewSet(viewsets.ModelViewSet):
     queryset = Token.objects.all()
     serializer_class = TokenSerializer
+
+
+class SettingViewSet(viewsets.ModelViewSet):
+    queryset = Setting.objects.all()
+    serializer_class = SettingSerializer
