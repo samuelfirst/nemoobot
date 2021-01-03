@@ -36,11 +36,26 @@ class Setting(models.Model):
     )
     default_commands = ArrayField(
         models.CharField(max_length=50, blank=True),
+        default='uptime,followage,game,title',
     )
-    custom_commands = models.JSONField(default=list)
     antispam = ArrayField(
         models.CharField(max_length=50, blank=True),
+        default='caps,urls',
     )
 
     def __str__(self):
         return self.user.username
+
+
+class CustomCommand(models.Model):
+    settings = models.ForeignKey(
+        Setting, on_delete=models.SET_NULL,
+        related_name='custom_commands',
+        related_query_name='custom_command',
+        null=True, blank=True,
+    )
+    name = models.CharField(max_length=50)
+    reply = models.TextField()
+
+    def __str__(self):
+        return self.name
