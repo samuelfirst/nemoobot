@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, Token, Setting
+from .models import User, Token, Setting, CustomCommand
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -22,8 +22,25 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
+class UserField(serializers.RelatedField):
+    def to_representation(self, value):
+        user_data = {
+            'twitch_username': value.twitch_username,
+            'twitch_user_id': value.twitch_user_id,
+            'token': value.token.access_token
+        }
+        return user_data
+
+
+class CustomCommandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomCommand
+        fields = ['name', 'reply']
+
+
 class SettingSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserField(read_only=True)
+    custom_commands = CustomCommandSerializer(many=True, read_only=True)
 
     class Meta:
         model = Setting
