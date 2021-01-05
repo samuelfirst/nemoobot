@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.postgres.fields import ArrayField, HStoreField
 from django.contrib.auth.models import AbstractUser
 
 
@@ -17,6 +18,7 @@ class Token(models.Model):
     access_token = models.CharField(max_length=40)
     refresh_token = models.CharField(max_length=80)
     expires_in = models.IntegerField()
+    expires_time = models.IntegerField()
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -24,3 +26,36 @@ class Token(models.Model):
 
     def __str__(self):
         return self.access_token
+
+
+class Setting(models.Model):
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    default_commands = ArrayField(
+        models.CharField(max_length=50, blank=True),
+        default='uptime,followage,game,title',
+    )
+    antispam = ArrayField(
+        models.CharField(max_length=50, blank=True),
+        default='caps,urls',
+    )
+
+    def __str__(self):
+        return self.user.username
+
+
+class CustomCommand(models.Model):
+    settings = models.ForeignKey(
+        Setting, on_delete=models.SET_NULL,
+        related_name='custom_commands',
+        related_query_name='custom_command',
+        null=True, blank=True,
+    )
+    name = models.CharField(max_length=50)
+    reply = models.TextField()
+
+    def __str__(self):
+        return self.name

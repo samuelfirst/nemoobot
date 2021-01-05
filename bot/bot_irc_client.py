@@ -38,6 +38,7 @@ class BotIRCClient(irc.IRCClient):
         print(f"[{channel}] {user}: {message}")
         for bot in self.bots:
             if bot.channel == channel:
+                bot.antispam_check(user, message)
                 bot.process_command(user, message)
 
     def joined(self, bot: TwitchBot):

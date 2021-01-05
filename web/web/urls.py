@@ -8,6 +8,7 @@ from accounts import views as accounts_views
 router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
 router.register(r'tokens', accounts_views.TokenViewSet)
+router.register(r'settings', accounts_views.SettingViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +25,7 @@ urlpatterns = [
         accounts_views.connect_to_twicth,
         name='connect_to_twitch'),
     path('profile/', accounts_views.profile, name='profile'),
+    path('settings/', accounts_views.settings, name='settings'),
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('rest_framework.urls', namespace='rest_framework')),
 ]

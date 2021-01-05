@@ -4,6 +4,7 @@ from twisted.internet import reactor, protocol
 
 from twitch_bot import TwitchBot
 from bot_irc_client import BotIRCClient
+from utils import load_user_settings
 
 
 class BotFactory(protocol.ClientFactory):
@@ -26,7 +27,9 @@ if __name__ == '__main__':
 
     # create bot instances
     bots = list()
-    bots.append(TwitchBot('samuelfirst'))
+    for settings in load_user_settings():
+        bot = TwitchBot(*settings)
+        bots.append(bot)
 
     BotIRCClient.bots = bots
 

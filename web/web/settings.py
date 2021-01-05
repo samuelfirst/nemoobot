@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
-    'rest_framework'
+    'rest_framework',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -88,8 +89,12 @@ WSGI_APPLICATION = 'web.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('SQL_ENGINE'),
-        'NAME': BASE_DIR / os.getenv('SQL_DATABASE'),
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -117,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -140,8 +145,13 @@ TWITCH_CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 TWITCH_REDIRECT_URL = os.getenv('TWITCH_REDIRECT_URL')
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# Celery settings
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = os.getenv('CELERY_ACCEPT_CONTENT').split(' ')
+CELERY_TASK_SERIALIZER = os.getenv('CELERY_TASK_SERIALIZER')
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_ENABLE_UTC = True
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
