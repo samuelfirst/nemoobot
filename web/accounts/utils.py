@@ -1,3 +1,5 @@
+import time
+
 from django.conf import settings
 import requests
 
@@ -17,4 +19,5 @@ def get_token_by_code(code):
     access_token = token_data['access_token']
     refresh_token = token_data['refresh_token']
     expires_in = token_data['expires_in']
-    return access_token, refresh_token, expires_in
+    expires_time = expires_in + int(time.time())
+    return access_token, refresh_token, expires_in, expires_time

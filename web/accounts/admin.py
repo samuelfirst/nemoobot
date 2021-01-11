@@ -6,17 +6,25 @@ from .models import User, Token
 
 class TokenInline(admin.TabularInline):
     model = Token
-    readonly_fields = ('access_token', 'refresh_token', 'expires_in')
+    readonly_fields = (
+        'access_token', 'refresh_token', 'expires_in', 'expires_time',
+    )
 
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('access_token', 'user',)
-    readonly_fields = ('access_token', 'refresh_token', 'expires_in', 'user')
+    readonly_fields = (
+        'access_token', 'refresh_token', 'expires_in', 'expires_time', 'user'
+    )
 
     fieldsets = (
-        ('Token', {'fields': ('access_token', 'refresh_token', 'expires_in',)}),
-        ('User', {'fields': ('user',)}),
+        ('Token', {'fields': (
+            'access_token', 'refresh_token', 'expires_in', 'expires_time',
+        )}),
+        ('User', {'fields': (
+            'user',
+        )}),
     )
 
 
