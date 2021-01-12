@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if settings %}
+        <form method="post" class="container m-0 mt-3">
+        {% csrf_token %}
+            <div class="row">
+                <div class="col-sm">
+                    <h2>Default commands</h2>
+                    {% for def_cmd in default_commands %}
+                        {% if def_cmd in settings.default_commands %}
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" checked>
+                              <label class="form-check-label" for="flexCheckDefault">
+                                {{ def_cmd }}
+                              </label>
+                            </div>
+                        {% else %}
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" >
+                              <label class="form-check-label" for="flexCheckDefault">
+                                {{ def_cmd }}
+                              </label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-sm">
+                    <h2>Antispam settings</h2>
+                    {% for setting in antispam_settings %}
+                        {% if setting in settings.antispam %}
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" checked>
+                              <label class="form-check-label" for="flexCheckDefault">
+                                {{ setting }}
+                              </label>
+                            </div>
+                        {% else %}
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" >
+                              <label class="form-check-label" for="flexCheckDefault">
+                                {{ setting }}
+                              </label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <h2>Custom commands</h2>
+                    {% if custom_commands %}
+                        {% for cmd in custom_commands%}
+                            <div class="input-group mb-3">
+                              <span class="input-group-text">!</span>
+                              <input type="text"  class="form-control" placeholder="command" name="cmd_name" value="{{ cmd.name }}" aria-label="CmdName">
+                              <input type="text"  class="form-control" placeholder="reply text" name="cmd_reply" value="{{ cmd.reply }}" aria-label="CmdReply">
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">!</span>
+                            <input type="text" class="form-control" placeholder="command" name="new_cmd_name" aria-label="CmdName">
+                            <textarea class="form-control" placeholder="reply text" name="new_cmd_reply" aria-label="CmdReply"></textarea>
+                        </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    {% endif %}
+{% endblock %}
