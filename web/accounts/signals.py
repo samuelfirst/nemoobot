@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 
 from .models import CustomCommand, Setting, User, Token
@@ -38,3 +38,9 @@ def send_add_command_to_bot(sender, **kwargs):
         user = kwargs.get('instance')
         settings = Setting.objects.get(user_id=user.id)
         send_command_to_bot.apply_async(('ADD', settings.id))
+
+
+@receiver(pre_delete, sender=Setting)
+def send_delete_command_to_bot(sender, **kwargs):
+    settings = kwargs.get('instance')
+    send_command_to_bot.apply_async(('DELETE', settings.id))
