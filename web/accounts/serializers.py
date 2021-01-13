@@ -27,7 +27,6 @@ class UserField(serializers.RelatedField):
         user_data = {
             'twitch_username': value.twitch_username,
             'twitch_user_id': value.twitch_user_id,
-            'token': value.token.access_token
         }
         return user_data
 
