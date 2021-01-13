@@ -49,10 +49,9 @@ class Setting(models.Model):
 
 class CustomCommand(models.Model):
     settings = models.ForeignKey(
-        Setting, on_delete=models.SET_NULL,
+        Setting, on_delete=models.CASCADE,
         related_name='custom_commands',
         related_query_name='custom_command',
-        null=True, blank=True,
     )
     name = models.CharField(max_length=50)
     reply = models.TextField()
