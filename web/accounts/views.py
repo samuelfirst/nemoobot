@@ -16,6 +16,9 @@ from .serializers import (
 
 
 def index(request):
+    user = request.user
+    if user.is_active and getattr(user, 'token'):
+        return redirect('settings')
     return render(request, 'index.html')
 
 
