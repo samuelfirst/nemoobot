@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from .models import Token, User, Setting, CustomCommand
 from .utils import get_token_by_code
@@ -85,8 +85,10 @@ class TokenViewSet(viewsets.ModelViewSet):
 class SettingViewSet(viewsets.ModelViewSet):
     queryset = Setting.objects.all()
     serializer_class = SettingSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class CustomCommandsViewSet(viewsets.ModelViewSet):
     queryset = CustomCommand.objects.all()
     serializer_class = CustomCommandSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
