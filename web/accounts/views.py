@@ -49,7 +49,7 @@ def connect_to_twicth(request):
 
     set_twitch_username_and_id_to_user.delay(user.id)
 
-    return redirect('index')
+    return redirect('settings')
 
 
 def profile(request):
