@@ -43,4 +43,7 @@ def send_add_command_to_bot(sender, **kwargs):
 @receiver(pre_delete, sender=Setting)
 def send_delete_command_to_bot(sender, **kwargs):
     settings = kwargs.get('instance')
-    send_command_to_bot.apply_async(('DELETE', settings.id))
+    # waiting for result of task and then delete settings
+    result = send_command_to_bot.apply_async(('DELETE', settings.id))
+    if result.get():
+        return
