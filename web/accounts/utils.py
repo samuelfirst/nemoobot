@@ -1,7 +1,8 @@
 import time
-
-from django.conf import settings
+import asyncio
 import requests
+import websockets
+from django.conf import settings
 
 
 def get_token_by_code(code):
@@ -21,3 +22,19 @@ def get_token_by_code(code):
     expires_in = token_data['expires_in']
     expires_time = expires_in + int(time.time())
     return access_token, refresh_token, expires_in, expires_time
+
+
+def get_user_settings_by_id(settings_id):
+    url = f'http://localhost:8000/api/v1/settings/{settings_id}'
+    res = requests.get(url)
+    return res.text
+
+
+def send_message_to_ws(message):
+    asyncio.get_event_loop().run_until_complete(send_message(message))
+
+
+async def send_message(message):
+    uri = 'ws://localhost:8765'
+    async with websockets.connect(uri) as sock:
+        await sock.send(message)
