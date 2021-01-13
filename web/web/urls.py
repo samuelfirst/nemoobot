@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 router.register(r'users', accounts_views.UserViewSet)
 router.register(r'tokens', accounts_views.TokenViewSet)
 router.register(r'settings', accounts_views.SettingViewSet)
+router.register(r'custom_commands', accounts_views.CustomCommandsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
