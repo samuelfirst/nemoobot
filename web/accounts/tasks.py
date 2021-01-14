@@ -24,6 +24,7 @@ def set_twitch_username_and_id_to_user(user_id):
 
     user.twitch_username = twitch_username
     user.twitch_user_id = twitch_user_id
+    user.is_connected_to_twitch = True
 
     user.save(update_fields=['twitch_username', 'twitch_user_id'])
 

@@ -17,7 +17,7 @@ from .serializers import (
 
 def index(request):
     user = request.user
-    if user.is_active and getattr(user, 'token'):
+    if user.is_active and getattr(user, 'is_connected_to_twitch'):
         return redirect('settings')
     return render(request, 'index.html')
 

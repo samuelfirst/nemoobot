@@ -38,7 +38,7 @@ class TokenAdmin(admin.ModelAdmin):
 class CustomUserAdmin(UserAdmin):
     inlines = (TokenInline, )
     fieldsets = UserAdmin.fieldsets + (
-        ('Twitch', {'fields': ('twitch_username', 'twitch_user_id')}),
+        ('Twitch', {'fields': ('is_connected_to_twitch', 'twitch_username', 'twitch_user_id')}),
     )
 
 
