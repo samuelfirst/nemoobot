@@ -6,16 +6,15 @@ import commands
 
 class TwitchBot:
     def __init__(self, user, default_commands,
-        custom_commands, antispam_settings):
+                 custom_commands, antispam):
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
-        self.twitch_access_token = user['token']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.antispam_settings = antispam_settings
+        self.antispam_settings = antispam
         self.irc = None
-        self.commands = [commands.Reload(self)]
+        self.commands = list()
         self.commands_list: List[str] = list()
 
         self.load_commands()
@@ -30,13 +29,12 @@ class TwitchBot:
             return False
 
     def reload(self, user, default_commands,
-        custom_commands, antispam_settings):
+               custom_commands, antispam):
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
-        self.twitch_access_token = user['token']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.antispam_settings = antispam_settings
+        self.antispam_settings = antispam
         self.reload_commands()
 
     def load_commands(self):
@@ -56,11 +54,9 @@ class TwitchBot:
             except:
                 commands_list.append(f'!{cmd.__class__.__name__.lower()}')
         self.commands_list = commands_list
-        print(", ".join(self.commands_list))
-
 
     def reload_commands(self):
-        self.commands = [commands.Reload(self)]
+        self.commands.clear()
         self.commands_list.clear()
         self.load_commands()
 
@@ -73,7 +69,7 @@ class TwitchBot:
         if 'caps' in self.antispam_settings:
             if message.isupper():
                 self.timeout(user, 10)
-                self.write('Kalm down!')
+                self.write('Calm down!')
 
     def process_command(self, user, message):
         for cmd in self.commands:
