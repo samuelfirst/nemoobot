@@ -1,5 +1,5 @@
 import requests
-
+from datetime import datetime
 API_BASE_URL = 'http://127.0.0.1:8000/api/v1/'
 API_SETTINGS_URL = API_BASE_URL + 'settings/'
 
@@ -33,8 +33,7 @@ def load_user_settings_by_channel_id(channel_id):
         if settings['user']['twitch_user_id'] == channel_id:
             return user_settings
 
-
-def stream_token(chanel_username):
+def stream_info(chanel_username):
 
     url = 'https://api.twitch.tv/helix/streams'
 
@@ -57,7 +56,6 @@ def stream_token(chanel_username):
     json_response = res.json()['data'] 
     return json_response
 
-
 def time_manage(stream_start):
     now = datetime.utcnow()
     for ch in ["-", "T", "Z", ":"]:
@@ -73,3 +71,72 @@ def time_manage(stream_start):
     
     var = str(hours) + ':' + str(minutes) + ':' + str(seconds)
     return var
+
+def user_info(user_username):
+    'GET USERS'
+    url = 'https://api.twitch.tv/helix/users'
+
+    token_url = 'https://id.twitch.tv/oauth2/token?client_id=cj6u5ko0kn9bpdgajxrbz5ircahgff&client_secret=jzf4gtifgl40sispkwhca2tfn4mtqc&grant_type=client_credentials'
+
+    res = requests.post(token_url)
+    data = res.json()
+    token = data.get('access_token')
+
+    headers = {
+    'Authorization': f'Bearer {token}',
+    'Client-ID': 'cj6u5ko0kn9bpdgajxrbz5ircahgff'
+    }
+
+    params = {
+    'login': user_username
+    }
+
+    res = requests.get(url, headers=headers, params=params)
+    json_response = res.json()['data'] 
+    return json_response
+
+def follow_age(streamer, follower):
+
+    
+    url = 'https://api.twitch.tv/helix/users/follows?'
+
+
+    token_url = 'https://id.twitch.tv/oauth2/token?client_id=cj6u5ko0kn9bpdgajxrbz5ircahgff&client_secret=jzf4gtifgl40sispkwhca2tfn4mtqc&grant_type=client_credentials'
+
+    res = requests.post(token_url)
+         
+    data = res.json()
+    token = data.get('access_token')
+
+    headers = {
+    'Authorization': f'Bearer {token}',
+    'Client-ID': 'cj6u5ko0kn9bpdgajxrbz5ircahgff'
+    }
+
+    params = {
+    'from_id': follower,
+    'to_id': streamer
+    }
+
+    res = requests.get(url, headers=headers, params=params)
+    json_follow = res.json()['data']
+    
+    return json_follow
+
+def follow_time (startfollow):
+    
+    now = datetime.now()
+
+    for ch in ["-", "T", "Z", ":"]:
+        startfollow = startfollow.replace(ch, "")
+
+    startfollow = datetime.strptime(startfollow, "%Y%m%d%H%M%S")
+    diff = now - startfollow
+    diff = str(diff)
+
+    x = diff.split()
+
+    days = x[0]
+    return days
+
+  

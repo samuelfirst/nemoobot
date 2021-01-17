@@ -13,6 +13,9 @@ from .serializers import UserSerializer, TokenSerializer, SettingSerializer
 
 
 def index(request):
+    # user = request.user
+    # if user.is_active and getattr(user, 'token'):
+    #     return redirect('settings')
     return render(request, 'index.html')
 
 
