@@ -35,6 +35,6 @@ def send_message_to_ws(message):
 
 
 async def send_message(message):
-    uri = 'ws://localhost:8765'
+    uri = 'ws://localhost:8000'
     async with websockets.connect(uri) as sock:
         await sock.send(message)
