@@ -1,247 +1,107 @@
 {% extends 'base.html' %}
 
 {% block scripts %}
+    {% load static %}
     <script type="text/javascript">
+        const username = '{{ settings.user.twitch_username }}'
+        const oauth_token = "oauth:{{ settings.user.token }}"
+
         var socket = new WebSocket("ws://localhost:8765");
 
         const xhr = new XMLHttpRequest()
-        const apiBaseUrl = "http://localhost:8000/api/v1/"
-        const customCommandsUrl = apiBaseUrl + 'custom_commands/'
-        const settingsUrl = apiBaseUrl + 'settings/'
-        const contentType = "application/json"
-        const csrfToken = getCookieByName('csrftoken')
-
-        function getCookieByName(name) {
-            let cookiesList = []
-            var cookies = document.cookie.split('; ')
-            for (let i = 0; i < cookies.length; i++) {
-                var cookieName = cookies[i].split('=')[0]
-                var cookieValue = cookies[i].split('=')[1]
-                var cookiesStr = '"' + cookieName + '":"' + cookieValue + '"'
-                cookiesList.push(cookiesStr)
-            }
-            var cookiesObj = JSON.parse("{"+cookiesList.join()+"}")
-            return cookiesObj[name]
-        }
-
-        function addNewCustomCommand(form) {
-            var method = "POST"
-            var cmd_name = form.elements['new_cmd_name'].value.replace(/\s/g, '_')
-            var cmd_reply = form.elements['new_cmd_reply'].value
-            var settings_id = form.name
-
-            xhr.open(method, customCommandsUrl)
-            xhr.setRequestHeader("Content-type", contentType);
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);
-
-            xhr.onload = function () {
-                document.location.reload();
-            }
-
-            let data = {
-                "settings": settings_id,
-                "name": cmd_name,
-                "reply": cmd_reply
-            }
-
-            xhr.send(JSON.stringify(data))
-        }
-
-        function changeCustomCommand(commandId, changedData) {
-            var method = "PATCH"
-            var changeCustomCommandsUrl = customCommandsUrl + commandId + '/'
-            var form = document.getElementById("customCommandsForm")
-
-            xhr.open(method, changeCustomCommandsUrl)
-            xhr.setRequestHeader("Content-type", contentType);
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);
-
-            xhr.onload = function () {
-                document.location.reload();
-            }
-
-            if (changedData.name == 'cmd_name') {
-                var data = {
-                    'name': changedData.value.replace(/\s/g, '_')
-                }
-            }
-            if (changedData.name == 'cmd_reply') {
-                var data = {
-                    'reply': changedData.value
-                }
-            }
-
-            xhr.send(JSON.stringify(data))
-        }
-
-        function deleteCustomCommand(commandId) {
-            var method = "DELETE"
-            var deleteCustomCommandsUrl = customCommandsUrl + commandId + '/'
-            var form = document.getElementById("customCommandsForm")
-
-            xhr.open(method, deleteCustomCommandsUrl)
-            xhr.setRequestHeader("Content-type", contentType);
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);
-
-            xhr.onload = function () {
-                document.location.reload();
-            }
-
-            xhr.send()
-        }
-
-        function getChangedSettingsData(form) {
-            var defaultCommandsNodeList = form.elements['default_commands']
-            let defaultCommands = new Array()
-            for (let i = 0; i < defaultCommandsNodeList.length; i++) {
-                let cmd = defaultCommandsNodeList[i];
-                if (cmd.checked) {
-                    defaultCommands.push(cmd.value)
-                }
-            }
-            var antispamSettingsNodeList = form.elements['antispam_settings']
-            let antispamSettings = []
-            for (let i = 0; i < antispamSettingsNodeList.length; i++) {
-                let param = antispamSettingsNodeList[i];
-                if (param.checked) {
-                    antispamSettings.push(param.value)
-                }
-            }
-
-            return {
-                'default_commands': defaultCommands,
-                'antispam': antispamSettings
-            }
-        }
-
-        function changeSettings(settingsId, form) {
-            var changeSettingsUrl = settingsUrl + settingsId + '/'
-            var changedSettingsData = getChangedSettingsData(form)
-            var method = 'PATCH'
-
-            xhr.open(method, changeSettingsUrl)
-            xhr.setRequestHeader("Content-type", contentType);
-            xhr.setRequestHeader("X-CSRFToken", csrfToken);
-
-            xhr.onload = function () {
-                document.location.reload();
-            }
-
-            xhr.send(JSON.stringify(changedSettingsData))
-        }
-
-        function getChatters() {
-            var method = 'GET'
-            var proxyUrl = 'https://cors-anywhere.herokuapp.com/'
-            var chattersUrl = 'http://tmi.twitch.tv/group/user/samuelfirst/chatters'
-
-            xhr.open(method, proxyUrl + chattersUrl)
-            xhr.responseType = 'json'
-            xhr.onload = function () {
-                let response = xhr.response
-                let chatters = response.chatters
-                return isBotChatModerator(chatters)
-            }
-            xhr.send()
-        }
-
-        function isBotChatModerator (chatters) {
-            var elem = document.getElementById('moderatorStatus')
-            if (chatters.moderators.includes('botvasiliy')) {
-                elem.innerHTML = '<h2>Moderator status</h2><p>Status: OK</p>'
-            }
-            else {
-                var button = document.createElement('button')
-                button.className = "btn btn-success"
-                button.innerHTML = "Add bot to moderators"
-                elem.innerHTML = '<h2>Moderator status</h2><p>Status: Bot is not moderator on your channel</p>'
-                elem.appendChild(button)
-            }
-        }
-        getChatters()
-        setInterval(getChatters, 20000)
     </script>
+    <script type = "text/javascript" src="{% static 'js/api_requests.js' %}"></script>
+    <script type = "text/javascript" src="{% static 'js/check_mods.js' %}"></script>
+    <script type = "text/javascript" src="{% static 'js/twitch_ws.js' %}"></script>
 {% endblock %}
 
 {% block content %}
+    {% if settings %}
     <div id="botModeratorCheck" class="container m-0 mt-3">
         <div class="row">
             <div class="col-sm" id="moderatorStatus">
                 <h2>Moderator status</h2>
                 <div class="spinner-border text-muted"></div>
             </div>
+            <div id="moderatorButton" hidden>
+                <button type="button" onclick="addBotToChannelMods()" class="btn btn-success">Add bot to moderators</button>
+            </div>
         </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row m-auto mt-3 mb-3 text-center">
+                <div class="col-sm rounded border border-light">
+                    <h2>Default commands</h2>
+                    {% for def_cmd in default_commands %}
+                    {% if def_cmd in settings.default_commands %}
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" checked>
+                          <label class="form-check-label" for="flexCheckDefault">
+                            {{ def_cmd }}
+                          </label>
+                        </div>
+                    {% else %}
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" >
+                          <label class="form-check-label" for="flexCheckDefault">
+                            {{ def_cmd }}
+                          </label>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col-sm rounded border border-light">
+                    <h2>Antispam settings</h2>
+                    {% for setting in antispam_settings %}
+                    {% if setting in settings.antispam %}
+                        <div class="form-check align-center">
+                          <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" checked>
+                          <label class="form-check-label" for="flexCheckDefault">
+                            {{ setting }}
+                          </label>
+                        </div>
+                    {% else %}
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" >
+                          <label class="form-check-label" for="flexCheckDefault">
+                            {{ setting }}
+                          </label>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <button onclick="changeSettings({{ settings.id }}, this.closest('form'))" type="button" class="btn btn-success">Save</button>
+                </div>
+            </div>
+        </form>
+        <form name="{{ settings.id }}" id="customCommandsForm">
+            {% csrf_token %}
+            <div class="row m-auto mt-3 mb-3 text-center rounded border border-light">
+                <div class="col-sm">
+                    {% if custom_commands %}
+                    <h2>Custom commands</h2>
+                    {% for cmd in custom_commands %}
+                    <div class="input-group mb-3">
+                      <span class="input-group-text">!</span>
+                      <input type="text"  class="form-control bg-dark text-light" placeholder="command" name="cmd_name" value="{{ cmd.name }}" aria-label="CmdName" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
+                      <input type="text"  class="form-control bg-dark text-light" placeholder="reply text" name="cmd_reply" value="{{ cmd.reply }}" aria-label="CmdReply" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
+                      <button type="button" onclick="deleteCustomCommand({{ cmd.id }})" class="btn btn-danger">Delete</button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <h2>Add new custom commands</h2>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">!</span>
+                        <input type="text" class="form-control bg-dark text-light" placeholder="command" name="new_cmd_name" aria-label="CmdName" required>
+                        <input class="form-control bg-dark text-light" placeholder="reply text" name="new_cmd_reply" aria-label="CmdReply" required>
+                        <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-success">Add new command</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    {% if settings %}
-    <form onchange="changeSettings({{ settings.id }}, this.closest('form'))" method="post" class="container m-0 mt-3">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm">
-                <h2>Default commands</h2>
-                {% for def_cmd in default_commands %}
-                {% if def_cmd in settings.default_commands %}
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" checked>
-                      <label class="form-check-label" for="flexCheckDefault">
-                        {{ def_cmd }}
-                      </label>
-                    </div>
-                {% else %}
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="default_commands" value="{{ def_cmd }}" id="flexCheckDefault" >
-                      <label class="form-check-label" for="flexCheckDefault">
-                        {{ def_cmd }}
-                      </label>
-                    </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-            <div class="col-sm">
-                <h2>Antispam settings</h2>
-                {% for setting in antispam_settings %}
-                {% if setting in settings.antispam %}
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" checked>
-                      <label class="form-check-label" for="flexCheckDefault">
-                        {{ setting }}
-                      </label>
-                    </div>
-                {% else %}
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="antispam_settings" value="{{ setting }}" id="flexCheckDefault" >
-                      <label class="form-check-label" for="flexCheckDefault">
-                        {{ setting }}
-                      </label>
-                    </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </form>
-    <form name="{{ settings.id }}" id="customCommandsForm" class="container m-0 mt-3">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm">
-                {% if custom_commands %}
-                <h2>Custom commands</h2>
-                {% for cmd in custom_commands %}
-                <div class="input-group mb-3">
-                  <span class="input-group-text">!</span>
-                  <input type="text"  class="form-control" placeholder="command" name="cmd_name" value="{{ cmd.name }}" aria-label="CmdName" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
-                  <input type="text"  class="form-control" placeholder="reply text" name="cmd_reply" value="{{ cmd.reply }}" aria-label="CmdReply" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
-                  <button type="button" onclick="deleteCustomCommand({{ cmd.id }})" class="btn btn-danger">Delete</button>
-                </div>
-                {% endfor %}
-                {% endif %}
-                <h2>Add new custom commands</h2>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">!</span>
-                    <input type="text" class="form-control" placeholder="command" name="new_cmd_name" aria-label="CmdName" required>
-                    <input class="form-control" placeholder="reply text" name="new_cmd_reply" aria-label="CmdReply" required>
-                    <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-success">Add new command</button>
-                </div>
-            </div>
-        </div>
-    </form>
     {% endif %}
 {% endblock %}
