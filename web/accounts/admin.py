@@ -36,6 +36,9 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 class CustomUserAdmin(UserAdmin):
+    list_display = UserAdmin.list_display + (
+        'is_connected_to_twitch',
+    )
     inlines = (TokenInline, )
     fieldsets = UserAdmin.fieldsets + (
         ('Twitch', {'fields': ('is_connected_to_twitch', 'twitch_username', 'twitch_user_id')}),
