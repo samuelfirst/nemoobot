@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -29,4 +31,4 @@ urlpatterns = [
     path('settings/', accounts_views.settings, name='settings'),
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('rest_framework.urls', namespace='rest_framework')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
