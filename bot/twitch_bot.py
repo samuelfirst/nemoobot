@@ -1,7 +1,10 @@
-from typing import List
 import re
+from typing import List
+from loguru import logger
 
 import commands
+
+logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="twitch_bot")
 
 
 class TwitchBot:
@@ -38,6 +41,7 @@ class TwitchBot:
         self.reload_commands()
 
     def load_commands(self):
+        logger.info(f'Load command for TwitchBot in {self.channel} channel')
         for cmd in commands.commands:
             if cmd.__name__.lower() in self.default_commands:
                 self.commands.append(cmd(self))
@@ -74,6 +78,7 @@ class TwitchBot:
     def process_command(self, user, message):
         for cmd in self.commands:
             if cmd.match(self, user, message):
+                logger.debug(f'[{self.channel}] {cmd.__class__.__name__} command running')
                 cmd.run(self, user, message)
             else:
                 pass
@@ -81,6 +86,7 @@ class TwitchBot:
     def write(self, message):
         if self.irc is not None:
             self.irc.msg(self.channel, message)
+            logger.info(f'[{self.channel}] {self.irc.username}: {message}')
 
     def timeout(self, user, duration):
         timeout_message = f"/timeout {user} {duration}"

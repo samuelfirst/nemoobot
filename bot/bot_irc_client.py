@@ -1,12 +1,12 @@
 import os
-import asyncio
-import socket
-import json
 from typing import List
 from twisted.words.protocols import irc
 from twisted.internet import reactor, threads, task
+from loguru import logger
 
 from twitch_bot import TwitchBot
+
+logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="bot_irc_client")
 
 
 class BotIRCClient(irc.IRCClient):
@@ -33,7 +33,7 @@ class BotIRCClient(irc.IRCClient):
 
         # connect to websocket
         if self.ws_factory is not None:
-            reactor.connectTCP('localhost', 8765, self.ws_factory)
+            reactor.connectTCP('localhost', 8000, self.ws_factory)
 
     def lineReceived(self, line):
         self.parse_line(line.decode('utf-8'))
@@ -44,7 +44,7 @@ class BotIRCClient(irc.IRCClient):
 
     def privmsg(self, user, channel, message):
         user = user.rsplit('!', 1)[0]
-        print(f"[{channel}] {user}: {message}")
+        logger.info(f"[{channel}] {user}: {message}")
         for bot in self.bots:
             if bot.channel == channel:
                 if bot.antispam_settings:
@@ -52,7 +52,7 @@ class BotIRCClient(irc.IRCClient):
                 bot.process_command(user, message)
 
     def joined(self, bot: TwitchBot):
-        print(f"{self.username} connected to {bot.channel}")
+        logger.info(f"{self.username} connected to {bot.channel}")
 
     def userJoined(self, user, channel):
         for bot in self.bots:
@@ -77,8 +77,10 @@ class BotIRCClient(irc.IRCClient):
                 self.bots.pop(i)
                 # leave the channel
                 self.leave(bot.channel)
+                logger.info(f'Bot leave {bot.channel}!')
 
     def reload_bot(self, args):
         for bot in self.bots:
             if bot.channel_id == args['user']['twitch_user_id']:
                 bot.reload(**args)
+                logger.info(f'Bot in {bot.channel} was reloaded!')
