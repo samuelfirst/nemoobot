@@ -1,11 +1,8 @@
-import requests
-import pprint
-
 from .command import Command
-from ..utils import stream_info, time_manage, user_info, follow_time, follow_age 
+from bot.utils import user_info, follow_time, follow_age
 
-class Followage(Command):
 
+class FollowAge(Command):
     def match(self, bot, user, msg):
         cmd = msg.split(' ')[0]
         return cmd == '!followage'
@@ -20,9 +17,8 @@ class Followage(Command):
         streamer_id = user_info(twitch_username)[0]['id']
         
         follow_age(streamer_id, user_id)
-        
-        
-        if follow_age(streamer_id, user_id) == [] :
+
+        if follow_age(streamer_id, user_id) == []:
             bot.write(user + ' ты не следишь за каналом')
         else: 
             followtime = follow_age(streamer_id, user_id)[0]['followed_at']

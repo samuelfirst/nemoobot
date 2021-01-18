@@ -1,10 +1,8 @@
-import requests
-
 from .command import Command
-from ..utils import stream_info, time_manage
+from bot.utils import stream_info, time_manage
+
 
 class Uptime(Command):
-
 
     def match(self, bot, user, msg):
         cmd = msg.split(' ')[0]
@@ -20,4 +18,3 @@ class Uptime(Command):
         else:
             streamstart = stream_info(twitch_username)[0]['started_at']    
             bot.write('Стрем идет - ' + time_manage(streamstart))
-           
