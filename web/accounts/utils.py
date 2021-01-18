@@ -27,7 +27,7 @@ def get_token_by_code(code):
 def get_user_settings_by_id(settings_id):
     url = f'http://localhost:8000/api/v1/settings/{settings_id}'
     res = requests.get(url)
-    return res.text
+    return res.json()
 
 
 def send_message_to_ws(message):
