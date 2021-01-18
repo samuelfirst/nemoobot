@@ -1,4 +1,5 @@
 import time
+import json
 import requests
 from django.conf import settings
 from celery import shared_task
@@ -26,7 +27,9 @@ def set_twitch_username_and_id_to_user(user_id):
     user.twitch_user_id = twitch_user_id
     user.is_connected_to_twitch = True
 
-    user.save(update_fields=['twitch_username', 'twitch_user_id'])
+    user.save(update_fields=[
+        'twitch_username', 'twitch_user_id', 'is_connected_to_twitch'
+    ])
 
 
 @shared_task
@@ -64,5 +67,11 @@ def check_twitch_access_token_freshness():
 @shared_task
 def send_command_to_bot(command, settings_id):
     settings = get_user_settings_by_id(settings_id)
-    message = f'{command} {settings}'
-    send_message_to_ws(message)
+    message = {
+        "type": "command",
+        "data": {
+            "command": command,
+            "args": settings
+        }
+    }
+    send_message_to_ws(json.dumps(message))
