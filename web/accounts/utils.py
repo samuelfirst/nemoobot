@@ -1,8 +1,8 @@
 import time
-import asyncio
 import requests
-import websockets
 from django.conf import settings
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 def get_token_by_code(code):
@@ -25,16 +25,11 @@ def get_token_by_code(code):
 
 
 def get_user_settings_by_id(settings_id):
-    url = f'http://localhost:8000/api/v1/settings/{settings_id}'
+    url = f'{settings.BASE_API_URL}settings/{settings_id}'
     res = requests.get(url)
     return res.json()
 
 
 def send_message_to_ws(message):
-    asyncio.get_event_loop().run_until_complete(send_message(message))
-
-
-async def send_message(message):
-    uri = 'ws://localhost:8000'
-    async with websockets.connect(uri) as sock:
-        await sock.send(message)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("bot_commands",  message)
