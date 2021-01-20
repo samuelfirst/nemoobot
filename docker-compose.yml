@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   web:
-    container_name: django_server
     build: ./web
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -15,6 +14,7 @@ services:
       - redis
     depends_on:
       - celery
+      - celery-beat
       - db
   celery:
     build: ./web
@@ -25,9 +25,17 @@ services:
       - ./web:/var/www/web
     links:
       - redis
+  celery-beat:
+    build: ./web
+    command: celery -A web beat --loglevel=DEBUG
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./web:/var/www/web
+    links:
+      - redis
   db:
     image: postgres:12.0-alpine
-    container_name: postgres_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
