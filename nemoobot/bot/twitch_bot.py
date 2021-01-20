@@ -2,9 +2,7 @@ import re
 from typing import List
 from loguru import logger
 
-import commands
-
-logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="twitch_bot")
+import bot.commands as commands
 
 
 class TwitchBot:

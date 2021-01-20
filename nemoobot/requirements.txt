@@ -1,0 +1,10 @@
+autobahn==20.12.3
+kombu==4.6.11
+loguru==0.5.3
+mock==4.0.3
+pytest==6.2.1
+pytest-mock==3.5.0
+python-dotenv==0.15.0
+requests==2.25.1
+Twisted==20.3.0
+websockets==8.1

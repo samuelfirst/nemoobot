@@ -4,9 +4,11 @@ from twisted.words.protocols import irc
 from twisted.internet import reactor, threads, task
 from loguru import logger
 
-from twitch_bot import TwitchBot
-
-logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="bot_irc_client")
+from bot.config import (
+    BOT_NICKNAME, CLIENT_ID, BOT_AUTH_TOKEN,
+    WS_HOST, WS_PORT
+)
+from bot.twitch_bot import TwitchBot
 
 
 class BotIRCClient(irc.IRCClient):
@@ -15,9 +17,9 @@ class BotIRCClient(irc.IRCClient):
     ws_factory = None
 
     def __init__(self):
-        self.username = os.getenv('BOT_NICKNAME')
-        self.client_id = os.getenv('CLIENT_ID')
-        self.password = os.getenv('BOT_AUTH_TOKEN')
+        self.username = BOT_NICKNAME
+        self.client_id = CLIENT_ID
+        self.password = BOT_AUTH_TOKEN
         # set irc attribute for websocket factory's protocol
         self.ws_factory.protocol.irc = self
 
@@ -33,7 +35,7 @@ class BotIRCClient(irc.IRCClient):
 
         # connect to websocket
         if self.ws_factory is not None:
-            reactor.connectTCP('localhost', 8000, self.ws_factory)
+            reactor.connectTCP(WS_HOST, WS_PORT, self.ws_factory)
 
     def lineReceived(self, line):
         self.parse_line(line.decode('utf-8'))
@@ -52,7 +54,7 @@ class BotIRCClient(irc.IRCClient):
                 bot.process_command(user, message)
 
     def joined(self, bot: TwitchBot):
-        logger.info(f"{self.username} connected to {bot.channel}")
+        logger.info(f"Bot [{self.username}] connected to chat channel [{bot.channel}]")
 
     def userJoined(self, user, channel):
         for bot in self.bots:

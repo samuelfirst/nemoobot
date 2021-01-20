@@ -1,19 +1,14 @@
-import os
 import requests
 from datetime import datetime
+from bot.config import CLIENT_ID, CLIENT_SECRET, BASE_DRF_API_URL
 
-API_BASE_URL = 'http://127.0.0.1:8000/api/v1/'
-API_SETTINGS_URL = API_BASE_URL + 'settings/'
-
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+API_SETTINGS_URL = BASE_DRF_API_URL + 'settings/'
 
 APP_ACCESS_TOKEN_URL = f'https://id.twitch.tv/oauth2/token?client_id={CLIENT_ID}&client_secret={CLIENT_SECRET}&grant_type=client_credentials'
 
 
 def load_user_settings():
-    url = API_SETTINGS_URL
-    res = requests.get(url)
+    res = requests.get(API_SETTINGS_URL)
     settings = res.json()
 
     settings_list = list()
@@ -30,8 +25,7 @@ def load_user_settings():
 
 def load_user_settings_by_channel_id(channel_id):
 
-    url = API_BASE_URL + 'settings/'
-    res = requests.get(url)
+    res = requests.get(API_SETTINGS_URL)
     settings = res.json()
 
     for user_settings in settings:

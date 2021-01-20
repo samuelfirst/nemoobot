@@ -1,0 +1,11 @@
+celery==4.4.7
+channels==3.0.3
+channels-redis==3.2.0
+Django==3.1.4
+django-celery-beat==2.1.0
+django-filter==2.4.0
+djangorestframework==3.12.2
+psycopg2-binary==2.8.6
+python-dotenv==0.15.0
+redis==3.5.3
+requests==2.25.1
