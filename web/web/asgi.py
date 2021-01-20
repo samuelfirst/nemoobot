@@ -25,5 +25,4 @@ application = ProtocolTypeRouter({
             path('', BotCommandsConsumer.as_asgi(), name='commands'),
         ]),
     ),
-    # Just HTTP for now. (We can add other protocols later.)
 })
