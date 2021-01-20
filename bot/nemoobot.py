@@ -1,25 +1,28 @@
 import os
 from dotenv import load_dotenv
 from twisted.internet import reactor, protocol
+from loguru import logger
 
 from twitch_bot import TwitchBot
 from bot_irc_client import BotIRCClient
 from bot_ws_client import BotWebSocketClientFactory
 from utils import load_user_settings
 
+logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="__main__")
+
 
 class BotFactory(protocol.ClientFactory):
     protocol = BotIRCClient
 
     def startedConnecting(self, connector):
-        print("Connection has been started.")
+        logger.info("Connection has been started.")
 
     def clientConnectionLost(self, connector, reason):
-        print("Connection lost. Reason: %s" % reason)
+        logger.info("Connection lost. Reason: %s" % reason)
         connector.connect()
 
     def clientConnectionFailed(self, connector, reason):
-        print("Connection failed. Reason: %s" % reason)
+        logger.debug("Connection failed. Reason: %s" % reason)
 
 
 if __name__ == '__main__':

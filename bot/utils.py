@@ -1,7 +1,14 @@
+import os
 import requests
+from datetime import datetime
 
 API_BASE_URL = 'http://127.0.0.1:8000/api/v1/'
 API_SETTINGS_URL = API_BASE_URL + 'settings/'
+
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+
+APP_ACCESS_TOKEN_URL = f'https://id.twitch.tv/oauth2/token?client_id={CLIENT_ID}&client_secret={CLIENT_SECRET}&grant_type=client_credentials'
 
 
 def load_user_settings():
@@ -27,32 +34,29 @@ def load_user_settings_by_channel_id(channel_id):
     res = requests.get(url)
     settings = res.json()
 
-    settings_list = list()
-
     for user_settings in settings:
         if settings['user']['twitch_user_id'] == channel_id:
             return user_settings
 
 
-def stream_token(chanel_username):
+def get_app_access_token():
+    res = requests.post(APP_ACCESS_TOKEN_URL)
+    data = res.json()
+    app_access_token = data.get('access_token')
+    return app_access_token
+
+
+def stream_info(channel_username):
 
     url = 'https://api.twitch.tv/helix/streams'
-
-    token_url = 'https://id.twitch.tv/oauth2/token?client_id=cj6u5ko0kn9bpdgajxrbz5ircahgff&client_secret=jzf4gtifgl40sispkwhca2tfn4mtqc&grant_type=client_credentials'
-
-    res = requests.post(token_url)
-    data = res.json()
-    token = data.get('access_token')
-
+    token = get_app_access_token()
     headers = {
-    'Authorization': f'Bearer {token}',
-    'Client-ID': 'cj6u5ko0kn9bpdgajxrbz5ircahgff'
+        'Authorization': f'Bearer {token}',
+        'Client-ID': CLIENT_ID
     }
-
     params = {
-    'user_login': chanel_username
+        'user_login': channel_username
     }
-
     res = requests.get(url, headers=headers, params=params)
     json_response = res.json()['data'] 
     return json_response
@@ -61,7 +65,7 @@ def stream_token(chanel_username):
 def time_manage(stream_start):
     now = datetime.utcnow()
     for ch in ["-", "T", "Z", ":"]:
-                stream_start = stream_start.replace(ch, "")
+        stream_start = stream_start.replace(ch, "")
 
     stream_start = datetime.strptime(stream_start, "%Y%m%d%H%M%S")
     elapsed_time = now - stream_start
@@ -73,3 +77,54 @@ def time_manage(stream_start):
     
     var = str(hours) + ':' + str(minutes) + ':' + str(seconds)
     return var
+
+
+def user_info(user_username):
+    url = 'https://api.twitch.tv/helix/users'
+    token = get_app_access_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Client-ID': CLIENT_ID
+    }
+    params = {
+        'login': user_username
+    }
+
+    res = requests.get(url, headers=headers, params=params)
+    json_response = res.json()['data'] 
+    return json_response
+
+
+def follow_age(streamer, follower):
+    url = 'https://api.twitch.tv/helix/users/follows?'
+    token = get_app_access_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Client-ID': 'cj6u5ko0kn9bpdgajxrbz5ircahgff'
+    }
+
+    params = {
+        'from_id': follower,
+        'to_id': streamer
+    }
+
+    res = requests.get(url, headers=headers, params=params)
+    json_follow = res.json()['data']
+    
+    return json_follow
+
+
+def follow_time(startfollow):
+    now = datetime.now()
+
+    for ch in ["-", "T", "Z", ":"]:
+        startfollow = startfollow.replace(ch, "")
+
+    startfollow = datetime.strptime(startfollow, "%Y%m%d%H%M%S")
+    diff = now - startfollow
+    diff = str(diff)
+
+    x = diff.split()
+
+    days = x[0]
+    return days
