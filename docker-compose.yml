@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+  web:
+    container_name: django_server
+    build: ./web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./web/:/usr/src/web/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
+    links:
+      - redis
+    depends_on:
+      - celery
+      - db
+  celery:
+    build: ./web
+    command: celery -A web worker --loglevel=DEBUG
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./web:/var/www/web
+    links:
+      - redis
+  db:
+    image: postgres:12.0-alpine
+    container_name: postgres_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=somePassword
+      - POSTGRES_DB=django
+    ports:
+      - '5432:5432'
+  redis:
+    image: redis:latest
+    container_name: rd01
+    ports:
+      - '6379:6379'
+  bot:
+    build: ./nemoobot
+    command: python nemoobot.py
+    volumes:
+      - ./nemoobot/:/usr/src/nemoobot/
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
