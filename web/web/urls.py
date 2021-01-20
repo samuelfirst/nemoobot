@@ -16,6 +16,7 @@ router.register(r'custom_commands', accounts_views.CustomCommandsViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', accounts_views.index, name='index'),
+    path('accounts/', include('django.contrib.auth.urls')),
     path(
         'login/',
         auth_views.LoginView.as_view(template_name='login.html'),
