@@ -27,7 +27,7 @@ class UserField(serializers.RelatedField):
         user_data = {
             'twitch_username': value.twitch_username,
             'twitch_user_id': value.twitch_user_id,
-            'token': value.token.access_token
+            'token': value.token.access_token,
         }
         return user_data
 
@@ -35,12 +35,23 @@ class UserField(serializers.RelatedField):
 class CustomCommandSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomCommand
-        fields = ['name', 'reply']
+        fields = ['settings', 'name', 'reply']
+
+
+class CustomCommandField(serializers.RelatedField):
+    def to_representation(self, value):
+        command_data = {
+            'name': value.name,
+            'reply': value.reply
+        }
+        return command_data
 
 
 class SettingSerializer(serializers.ModelSerializer):
     user = UserField(read_only=True)
-    custom_commands = CustomCommandSerializer(many=True, read_only=True)
+    custom_commands = CustomCommandField(many=True, read_only=True)
+    default_commands = serializers.ListField(child=serializers.CharField())
+    antispam = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = Setting
