@@ -1,5 +1,4 @@
 import time
-import json
 import requests
 from django.conf import settings
 from celery import shared_task
@@ -30,6 +29,7 @@ def set_twitch_username_and_id_to_user(user_id):
     user.save(update_fields=[
         'twitch_username', 'twitch_user_id', 'is_connected_to_twitch'
     ])
+    return f'Set twitch_username, twitch_user_id, is_connected_to_twitch for User {user}'
 
 
 @shared_task
@@ -53,6 +53,7 @@ def refresh_access_token(token_id):
     token.expires_in = expires_in
     token.expires_time = expires_time
     token.save()
+    return f'{token} was refreshed'
 
 
 @shared_task
@@ -74,4 +75,5 @@ def send_command_to_bot(command, settings_id):
             "args": settings
         }
     }
-    send_message_to_ws(json.dumps(message))
+    send_message_to_ws(message)
+    return 'Message sent to ws'
