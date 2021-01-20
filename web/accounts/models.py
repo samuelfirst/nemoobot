@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
 
+    email = models.EmailField(max_length=254, verbose_name='email address')
     is_connected_to_twitch = models.BooleanField(default=False)
     twitch_username = models.CharField(max_length=100, blank=True)
     twitch_user_id = models.IntegerField(null=True, blank=True)
