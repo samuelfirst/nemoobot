@@ -9,8 +9,21 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
 
 import os
 
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.urls import path
 from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web.settings')
+from accounts.consumers import BotCommandsConsumer
 
-application = get_asgi_application()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter([
+            path('', BotCommandsConsumer.as_asgi(), name='commands'),
+        ]),
+    ),
+    # Just HTTP for now. (We can add other protocols later.)
+})

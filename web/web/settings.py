@@ -43,11 +43,16 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'django_celery_beat',
+    'channels',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
 }
 
@@ -132,10 +137,23 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'accounts.User'
 
+ASGI_APPLICATION = "web.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6378)],
+        },
+    },
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'

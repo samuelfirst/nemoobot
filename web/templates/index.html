@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content%}
+  <div class="container mt-5 text-center">
   {% if user.username %}
     <h2>Welcome, {{ user.username }}!</h2>
     {% if user.token %}
@@ -11,4 +12,5 @@
   {% else %}
     <h2>Welcome!<br>Please <a href="{% url 'login'%}">login</a> or <a href="{% url 'signup'%}">sign up</a>!</h2>
   {% endif %}
+  </div>
 {% endblock %}
