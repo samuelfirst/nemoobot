@@ -12,7 +12,7 @@ class User(AbstractUser):
     twitch_user_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return f"<User {self.username}>"
 
 
 class Token(models.Model):
@@ -27,7 +27,7 @@ class Token(models.Model):
     )
 
     def __str__(self):
-        return self.access_token
+        return f"<Token {self.access_token}>"
 
 
 class Setting(models.Model):
@@ -38,15 +38,15 @@ class Setting(models.Model):
     )
     default_commands = ArrayField(
         models.CharField(max_length=50, blank=True),
-        default='uptime,followage,game,title',
+        default=list,
     )
     antispam = ArrayField(
         models.CharField(max_length=50, blank=True),
-        default='caps,urls',
+        default=list,
     )
 
     def __str__(self):
-        return self.user.username
+        return f"<Settings {self.user.username}>"
 
 
 class CustomCommand(models.Model):
@@ -59,4 +59,4 @@ class CustomCommand(models.Model):
     reply = models.TextField()
 
     def __str__(self):
-        return self.name
+        return f"<CustomCommand {self.name}>"
