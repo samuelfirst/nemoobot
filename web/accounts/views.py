@@ -1,18 +1,13 @@
-from django.db.models.signals import post_save, post_delete
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from rest_framework import viewsets, permissions
 
 from .models import Token, User, Setting, CustomCommand
 from .utils import get_token_by_code
 from .forms import (
-    CustomUserCreationForm, CustomUserChangeForm, SettingsChangeForm
+    CustomUserCreationForm, CustomUserChangeForm
 )
 from .tasks import set_twitch_username_and_id_to_user
-from .serializers import (
-    UserSerializer, TokenSerializer, SettingSerializer,
-    CustomCommandSerializer
-)
 
 
 def index(request):
@@ -55,6 +50,7 @@ def connect_to_twicth(request):
     return redirect('settings')
 
 
+@login_required
 def profile(request):
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, instance=request.user)
@@ -63,35 +59,18 @@ def profile(request):
     return render(request, 'profile.html')
 
 
+@login_required
 def settings(request):
     user = request.user
-    user_settings = Setting.objects.get(user_id=user.id)
-    custom_commands = CustomCommand.objects.filter(settings_id=user_settings.id)
-    context = {
-        'settings': user_settings, 'custom_commands': custom_commands,
-        'default_commands': ["uptime", "followage", "game", "title"],
-        'antispam_settings': ['urls', 'caps'],
-    }
-    return render(request, 'settings.html', context)
-
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class TokenViewSet(viewsets.ModelViewSet):
-    queryset = Token.objects.all()
-    serializer_class = TokenSerializer
-
-
-class SettingViewSet(viewsets.ModelViewSet):
-    queryset = Setting.objects.all()
-    serializer_class = SettingSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-class CustomCommandsViewSet(viewsets.ModelViewSet):
-    queryset = CustomCommand.objects.all()
-    serializer_class = CustomCommandSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    user_settings = Setting.objects.filter(user_id=user.id)
+    if user_settings.exists():
+        user_settings = user_settings.first()
+        custom_commands = CustomCommand.objects.filter(settings_id=user_settings.id)
+        context = {
+            'settings': user_settings, 'custom_commands': custom_commands,
+            'default_commands': ["uptime", "followage", "game", "title"],
+            'antispam_settings': ['urls', 'caps'],
+        }
+        return render(request, 'settings.html', context)
+    else:
+        return redirect('index')
