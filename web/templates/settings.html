@@ -6,8 +6,6 @@
         const username = '{{ settings.user.twitch_username }}'
         const oauth_token = "oauth:{{ settings.user.token }}"
 
-        var socket = new WebSocket("ws://localhost:8765");
-
         const xhr = new XMLHttpRequest()
     </script>
     <script type = "text/javascript" src="{% static 'js/api_requests.js' %}"></script>
@@ -17,7 +15,7 @@
 
 {% block content %}
     {% if settings %}
-    <div id="botModeratorCheck" class="container m-0 mt-3">
+    <div id="botModeratorCheck" class="container m-auto mt-3">
         <div class="row">
             <div class="col-sm" id="moderatorStatus">
                 <h2>Moderator status</h2>
