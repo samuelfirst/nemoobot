@@ -3,8 +3,12 @@ import requests
 from django.conf import settings
 from celery import shared_task
 
+from twitch_webhook.tasks import create_subscription
 from .models import User, Token
-from .utils import get_user_settings_by_id, send_message_to_ws
+from .utils import (
+    get_user_settings_by_id, get_list_user_settings, send_message_to_ws,
+    get_app_token
+)
 
 
 @shared_task
@@ -29,30 +33,39 @@ def set_twitch_username_and_id_to_user(user_id):
     user.save(update_fields=[
         'twitch_username', 'twitch_user_id', 'is_connected_to_twitch'
     ])
+
+    create_subscription.apply_async((user.id, 'channel.follow'))
     return f'Set twitch_username, twitch_user_id, is_connected_to_twitch for User {user}'
 
 
 @shared_task
 def refresh_access_token(token_id):
     token = Token.objects.get(pk=token_id)
-    url = 'https://id.twitch.tv/oauth2/token'
-    params = {
-        'grant_type': 'refresh_token',
-        'refresh_token': token.refresh_token,
-        'client_id': settings.TWITCH_CLIENT_ID,
-        'client_secret': settings.TWITCH_CLIENT_SECRET,
-    }
-    res = requests.post(url, params=params)
-    res = res.json()
+    if token.token_type == 'userToken':
+        url = 'https://id.twitch.tv/oauth2/token'
+        params = {
+            'grant_type': 'refresh_token',
+            'refresh_token': token.refresh_token,
+            'client_id': settings.TWITCH_CLIENT_ID,
+            'client_secret': settings.TWITCH_CLIENT_SECRET,
+        }
+        res = requests.post(url, params=params)
+        res = res.json()
 
-    access_token = res['access_token']
-    expires_in = res['expires_in']
-    expires_time = expires_in + int(time.time())
+        access_token = res['access_token']
+        expires_in = res['expires_in']
+        expires_time = expires_in + int(time.time())
 
-    token.access_token = access_token
-    token.expires_in = expires_in
-    token.expires_time = expires_time
-    token.save()
+        token.access_token = access_token
+        token.expires_in = expires_in
+        token.expires_time = expires_time
+        token.save()
+    elif token.token_type == 'appToken':
+        access_token, expires_in, expires_time = get_app_token()
+        token.access_token = access_token
+        token.expires_in = expires_in
+        token.expires_time = expires_time
+        token.save()
     return f'{token} was refreshed'
 
 
@@ -66,14 +79,27 @@ def check_twitch_access_token_freshness():
 
 
 @shared_task
-def send_command_to_bot(command, settings_id):
-    settings = get_user_settings_by_id(settings_id)
-    message = {
-        "type": "command",
-        "data": {
-            "command": command,
-            "args": settings
+def send_command_to_bot(command, settings_id=None):
+    if settings_id is not None:
+        settings = get_user_settings_by_id(settings_id)
+        message = {
+            "type": "command",
+            "data": {
+                "command": command,
+                "args": settings
+            }
         }
-    }
+    else:
+        list_settings = get_list_user_settings()
+        if list_settings:
+            message = {
+                "type": "command",
+                "data": {
+                    "command": command,
+                    "args": list_settings
+                }
+            }
+        else:
+            return
     send_message_to_ws(message)
     return 'Message sent to ws'

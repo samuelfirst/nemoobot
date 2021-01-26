@@ -3,17 +3,19 @@ from django.dispatch import receiver
 
 from .models import CustomCommand, Setting, User, Token
 from .tasks import send_command_to_bot
+from .utils import get_app_token
 
 
 @receiver(post_save, sender=Token)
 def create_default_settings_for_new_user(sender, **kwargs):
-    if kwargs.get('created'):
-        token = kwargs.get('instance')
-        user_id = token.user
+    token = kwargs.get('instance')
+    if kwargs.get('created') and token.token_type == 'userToken':
+        user = token.user
         settings = Setting(
-            user=user_id,
+            user=user,
             default_commands=['uptime', 'followage', 'game', 'title'],
-            antispam=['caps', 'urls']
+            antispam=['caps', 'urls'],
+            follow_notification=True
         )
         settings.save()
 
@@ -33,11 +35,21 @@ def send_reload_command_to_bot(sender, **kwargs):
 
 @receiver(post_save, sender=User)
 def send_add_command_to_bot(sender, **kwargs):
+    user = kwargs.get('instance')
     update_fields = kwargs.get('update_fields')
     if update_fields and 'twitch_username' in update_fields:
-        user = kwargs.get('instance')
         settings = Setting.objects.get(user_id=user.id)
         send_command_to_bot.apply_async(('ADD', settings.id))
+    if kwargs.get('created') and user.is_staff:
+        access_token, expires_in, expires_time = get_app_token()
+        Token(
+            user=user,
+            access_token=access_token,
+            refresh_token="",
+            expires_in=expires_in,
+            expires_time=expires_time,
+            token_type="appToken"
+        ).save()
 
 
 @receiver(pre_delete, sender=Setting)
@@ -45,5 +57,5 @@ def send_delete_command_to_bot(sender, **kwargs):
     settings = kwargs.get('instance')
     # waiting for result of task and then delete settings
     result = send_command_to_bot.apply_async(('DELETE', settings.id))
-    if result.get():
-        return
+    # if result.get():
+    #     return
