@@ -1,4 +1,4 @@
-var twitch = new WebSocket("ws://irc-ws.chat.twitch.tv:80");
+var twitch = new WebSocket("wss://irc-ws.chat.twitch.tv:443");
 
 twitch.onopen = function() {
     // Web Socket is connected, send data using send()
