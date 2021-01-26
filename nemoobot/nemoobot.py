@@ -1,14 +1,12 @@
-import os
-from dotenv import load_dotenv
 from twisted.internet import reactor, protocol
 from loguru import logger
 
-from twitch_bot import TwitchBot
-from bot_irc_client import BotIRCClient
-from bot_ws_client import BotWebSocketClientFactory
-from utils import load_user_settings
+from bot.twitch_bot import TwitchBot
+from bot.bot_irc_client import BotIRCClient
+from bot.bot_ws_client import BotWebSocketClientFactory
+from bot.utils import load_user_settings
 
-logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="__main__")
+logger.add('logs/nemoobot_logs.log', enqueue=True, format="{time} {level} | {module:<15} | {message}", level="DEBUG")
 
 
 class BotFactory(protocol.ClientFactory):
@@ -26,8 +24,6 @@ class BotFactory(protocol.ClientFactory):
 
 
 if __name__ == '__main__':
-    project_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    load_dotenv(os.path.join(project_folder, '.env.dev'))
 
     # create bot instances
     bots = list()

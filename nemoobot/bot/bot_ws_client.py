@@ -4,9 +4,7 @@ from autobahn.twisted.websocket import (
 )
 from loguru import logger
 
-from twitch_bot import TwitchBot
-
-logger.add('logs/nemoobot.log', format="{time} {level} {message}", filter="bot_ws_client")
+from bot.twitch_bot import TwitchBot
 
 
 class BotWebSocketClient(WebSocketClientProtocol):
@@ -14,7 +12,7 @@ class BotWebSocketClient(WebSocketClientProtocol):
     irc = None
 
     def onConnect(self, response):
-        logger.info("Server connected: {0}".format(response.peer))
+        logger.info("Client connected: {0}".format(response.peer))
 
     def onConnecting(self, transport_details):
         # print("Connecting; transport details: {}".format(transport_details))
@@ -36,7 +34,7 @@ class BotWebSocketClient(WebSocketClientProtocol):
                 self._process_command(command, args)
 
     def onClose(self, wasClean, code, reason):
-        pass
+        logger.info("WebSocket connection closed: {0}".format(reason))
 
     def _process_command(self, command, args):
         try:
@@ -53,5 +51,4 @@ class BotWebSocketClient(WebSocketClientProtocol):
 
 
 class BotWebSocketClientFactory(WebSocketClientFactory):
-
     protocol = BotWebSocketClient
