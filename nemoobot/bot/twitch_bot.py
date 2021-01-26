@@ -7,13 +7,14 @@ import bot.commands as commands
 
 class TwitchBot:
     def __init__(self, user, default_commands,
-                 custom_commands, antispam):
+                 custom_commands, antispam, follow_notification):
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
         self.antispam_settings = antispam
+        self.follow_notification = follow_notification
         self.irc = None
         self.commands = list()
         self.commands_list: List[str] = list()
@@ -30,12 +31,13 @@ class TwitchBot:
             return False
 
     def reload(self, user, default_commands,
-               custom_commands, antispam):
+               custom_commands, antispam, follow_notification):
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
         self.antispam_settings = antispam
+        self.follow_notification = follow_notification
         self.reload_commands()
 
     def load_commands(self):
