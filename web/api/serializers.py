@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, Token, Setting, CustomCommand
+from accounts.models import User, Token, Setting, CustomCommand
 
 
 class TokenSerializer(serializers.ModelSerializer):

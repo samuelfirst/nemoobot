@@ -1,34 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="text-center mt-5">
+  <div class="container text-center mt-3">
     <h2>Log in to NeMooBot</h2>
-    {% if form.errors %}
-        <div class="alert alert-danger mx-auto w-50" role="alert">
-          Your username and password didn't match. Please try again.
-        </div>
-    {% endif %}
-    <form method="post">
+    <form method="POST">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ next }}" />
-      {% for field in form %}
-        <p>
-          {{ field.label_tag }}<br>
-          {{ field }}<br>
-          {% for error in field.errors %}
-            <div class="alert alert-danger" role="alert">
-              {{ error }}
-            </div>
-          {% endfor %}
-          {% if field.help_text %}
-            <p><small style="color: grey">{{ field.help_text }}</small></p>
-          {% endif %}
-        </p>
-      {% endfor %}
-      <button type="submit" class="btn btn-success">Log in</button>
-      <p class="mt-2 px-2">
+      <div class="col-xs-3 mb-3">
+        <input type="text" class="form-control w-50 m-auto mt-1 text-center" id="{{form.username.id_for_label}}" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" placeholder="Username">
+        <div id="usernameHelpBlock" class="form-text mb-2">
+            {{ form.username.help_text }}
+        </div>
+      </div>
+      <div class="col-12 mb-3">
+        {% if form.password.errors %}
+          <div class="alert alert-danger" role="alert">
+            {{ form.password.errors }}
+          </div>
+        {% endif %}
+        <input class="form-control w-50 m-auto mt-1 text-center" id="{{ form.password.id_for_label }}"  type="password" name="password" autocomplete="current-password" required="" placeholder="Password">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-light mb-4">Login</button>
+      </div>
+      <p class="px-2">
         New to NeMooBot?
-        <a href="/signup">Sign up</a>
+        <a href="{% url 'signup' %}" class="text-white">Sign up</a>
+      </p>
+      <p class="px-2">
+        <a href="{% url 'password_reset' %}" class="text-white">Forgot your password?</a>
       </p>
     </form>
   </div>

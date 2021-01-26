@@ -1,10 +1,6 @@
 import json
 
-from channels.exceptions import DenyConnection
 from channels.generic.websocket import AsyncWebsocketConsumer
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import AnonymousUser
 
 
 class BotCommandsConsumer(AsyncWebsocketConsumer):

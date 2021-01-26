@@ -1,14 +1,17 @@
-#pull official base image
-FROM python:3.9.0
+FROM python:3.9.0-alpine
 
-#set enviroment variables
 ENV PYTHONFONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-#install dependencies
+RUN apk update \
+    && apk add gcc musl-dev python3-dev libffi-dev openssl-dev
+
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-#copy project
 COPY . .
+
+COPY ./entrypoint.sh .
+
+ENTRYPOINT ["sh", "/usr/src/nemoobot/entrypoint.sh"]

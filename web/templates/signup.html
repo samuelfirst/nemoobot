@@ -1,24 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container text-center mt-2">
   <h2>Sign up</h2>
-  <form method="post">
+  <form method="POST">
     {% csrf_token %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        {% if field.help_text %}
-          <br>
-          <small style="color: grey">{{ field.help_text }}</small>
-        {% endif %}
-        {% for error in field.errors %}
-          <div class="alert alert-danger" role="alert">
-            {{ error }}
-          </div>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <button type="submit" class="btn btn-success">Sign up</button>
+    <div class="col-12 mb-2">
+      <input type="text" name="username" class="form-control w-50 m-auto mt-1 text-center" id="{{form.username.id_for_label}}" required="" placeholder="username">
+      <div id="usernameHelpBlock" class="form-text mb-2">
+          {{ form.username.help_text }}
+      </div>
+    </div>
+    <div class="col-12 mb-2">
+      <input type="email" name="email" class="form-control w-50 m-auto mt-1 text-center" id="floatingInput" required="" placeholder="name@example.com">
+    </div>
+    <div class="col-12 mb-2">
+      {% if form.password1.errors %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.password1.errors }}
+        </div>
+      {% endif %}
+      <input class="form-control w-50 m-auto mt-1 text-center" type="password" name="password1" autocomplete="new-password" required="" id="{{ form.password1.id_for_label }}" placeholder="Password">
+      <div id="password1HelpBlock" class="form-text mb-2 align-items-center">
+          Your password can’t be too similar to your other personal information.<br>
+          Your password must contain at least 8 characters.<br>
+          Your password can’t be a commonly used password.<br>
+          Your password can’t be entirely numeric.
+      </div>
+    </div>
+    <div class="col-12 mb-2">
+      {% if form.password1.errors %}
+        <div class="alert alert-danger" role="alert">
+          {{ form.password2.errors }}
+        </div>
+      {% endif %}
+      <input class="form-control w-50 m-auto mt-1 text-center" type="password" name="password2" autocomplete="new-password" required="" id="{{ form.password1.id_for_label }}" placeholder="Confirm password">
+      <div id="password2HelpBlock" class="form-text mb-2">
+          {{ form.password2.help_text }}
+      </div>
+    </div>
+    <div class="col-12 mb-2">
+      <button type="submit" class="btn btn-light mb-4">Sign up</button>
+    </div>
   </form>
+</div>
 {% endblock %}
