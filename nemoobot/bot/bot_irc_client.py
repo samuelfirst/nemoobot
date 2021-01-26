@@ -15,6 +15,7 @@ class BotIRCClient(irc.IRCClient):
 
     bots: List[TwitchBot] = []
     ws_factory = None
+    is_started = False
 
     def __init__(self):
         self.username = BOT_NICKNAME
