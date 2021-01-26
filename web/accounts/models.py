@@ -18,7 +18,8 @@ class User(AbstractUser):
 class Token(models.Model):
 
     access_token = models.CharField(max_length=40)
-    refresh_token = models.CharField(max_length=80)
+    refresh_token = models.CharField(max_length=80, blank=True)
+    token_type = models.CharField(max_length=50, default='userToken')
     expires_in = models.IntegerField()
     expires_time = models.IntegerField()
     user = models.OneToOneField(
@@ -44,6 +45,7 @@ class Setting(models.Model):
         models.CharField(max_length=50, blank=True),
         default=list,
     )
+    follow_notification = models.BooleanField(default=False)
 
     def __str__(self):
         return f"<Settings {self.user.username}>"
