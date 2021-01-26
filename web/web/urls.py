@@ -14,5 +14,6 @@ urlpatterns = [
     ),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('', include('accounts.urls')),
+    path('webhooks/', include('twitch_webhook.urls')),
     path('api/v1/', include('api.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
