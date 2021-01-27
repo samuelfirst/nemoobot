@@ -3,18 +3,30 @@ from typing import List
 from loguru import logger
 
 import bot.commands as commands
+from bot.antispam import AntiSpam
 
 
 class TwitchBot:
-    def __init__(self, user, default_commands,
-                 custom_commands, antispam, follow_notification):
+    def __init__(
+            self, user, default_commands,
+            custom_commands, antispam, follow_notification,
+            banned_words=None):
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.antispam_settings = antispam
         self.follow_notification = follow_notification
+
+        caps = 'caps' in antispam
+        urls = 'urls' in antispam
+        self.antispam = AntiSpam(
+            is_active=True,
+            caps=caps,
+            urls=urls,
+            banned_words=banned_words
+        )
+
         self.irc = None
         self.commands = list()
         self.commands_list: List[str] = list()
@@ -25,19 +37,30 @@ class TwitchBot:
         if (self.channel == other.channel and
                 self.default_commands == other.default_commands and
                 self.custom_commands == other.custom_commands and
-                self.antispam_settings == other.antispam_settings):
+                self.antispam == other.antispam):
             return True
         else:
             return False
 
-    def reload(self, user, default_commands,
-               custom_commands, antispam, follow_notification):
+    def reload(
+            self, user, default_commands,
+            custom_commands, antispam, follow_notification,
+            banned_words=None):
+
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.antispam_settings = antispam
         self.follow_notification = follow_notification
+
+        caps = 'caps' in antispam
+        urls = 'urls' in antispam
+        self.antispam = AntiSpam(
+            is_active=True,
+            caps=caps,
+            urls=urls,
+            banned_words=banned_words
+        )
         self.reload_commands()
 
     def load_commands(self):
@@ -65,15 +88,10 @@ class TwitchBot:
         self.load_commands()
 
     def antispam_check(self, user, message):
-        if 'urls' in self.antispam_settings:
-            url_pattern = r'((?:(?:[a-z])*:(?:\/\/)*)*(?:www\.)*(?:[a-zA-Z0-9_\.]*(?:@)?)?[a-z]+\.(?:ru|net|com|ua|uk|cn))'
-            if re.findall(url_pattern, message):
-                self.timeout(user, 10)
-                self.write('Ссылки в чате запрещены.')
-        if 'caps' in self.antispam_settings:
-            if message.isupper():
-                self.timeout(user, 10)
-                self.write('Calm down!')
+        spam_detected, warn_message = self.antispam.check_message(message)
+        if spam_detected:
+            self.timeout(user, 10)
+            self.write(f'{user} {warn_message}')
 
     def process_command(self, user, message):
         for cmd in self.commands:
