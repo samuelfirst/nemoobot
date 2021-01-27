@@ -1,7 +1,7 @@
 function getChatters() {
     var method = 'GET'
     var proxyUrl = 'https://cors-anywhere.herokuapp.com/'
-    var chattersUrl = 'http://tmi.twitch.tv/group/user/samuelfirst/chatters'
+    var chattersUrl = 'http://tmi.twitch.tv/group/user/' + username + '/chatters'
 
     xhr.open(method, proxyUrl + chattersUrl)
     xhr.responseType = 'json'
@@ -17,6 +17,7 @@ function isBotChatModerator (chatters) {
     var elem = document.getElementById('moderatorStatus')
     if (chatters.moderators.includes('botvasiliy')) {
         elem.innerHTML = '<h2>Moderator status</h2><p>Status: OK</p>'
+        document.getElementById("moderatorButton").hidden = true;
     }
     else {
         elem.innerHTML = '<h2>Moderator status</h2><p>Status: Bot is not moderator on your channel</p>'
