@@ -3,8 +3,8 @@
 {% block scripts %}
     {% load static %}
     <script type="text/javascript">
-        const username = '{{ settings.user.twitch_username }}'
-        const oauth_token = "oauth:{{ settings.user.token }}"
+        const username = "{{ settings.user.twitch_username }}"
+        const oauth_token = "oauth:{{ settings.user.token.access_token }}"
 
         const xhr = new XMLHttpRequest()
     </script>
