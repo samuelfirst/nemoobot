@@ -18,6 +18,6 @@ twitch.onmessage = function(event) {
 }
 
 function addBotToChannelMods () {
-    twitch.send('PRIVMSG #{{ settings.user.twitch_username }} :/mod botvasiliy\r\n')
+    twitch.send('PRIVMSG #' + username + ' :/mod botvasiliy\r\n')
     document.location.reload();
 }
