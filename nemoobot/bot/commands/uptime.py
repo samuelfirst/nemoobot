@@ -1,5 +1,5 @@
 from .command import Command
-from bot.utils import stream_info, time_manage
+from bot.utils import decapi_uptime
 
 
 class Uptime(Command):
@@ -10,11 +10,10 @@ class Uptime(Command):
 
     def run(self, bot, user, msg):
 
-        twitch_username = f'{bot.channel}'
-        twitch_username = twitch_username.replace('#', '')
-        
-        if stream_info(twitch_username) == [] :
-            bot.write(user + ' Stream offline')
+        twitch_username = bot.channel.replace('#','')        
+        time = decapi_uptime(twitch_username)            
+        if twitch_username in time:
+            bot.write(user + ' stream currently offline')
         else:
-            streamstart = stream_info(twitch_username)[0]['started_at']    
-            bot.write('Стрем идет - ' + time_manage(streamstart))
+            bot.write(user + ' стрим онлайн уже ' + time)
+

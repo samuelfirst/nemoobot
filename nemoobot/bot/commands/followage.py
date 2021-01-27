@@ -1,6 +1,5 @@
 from .command import Command
-from bot.utils import user_info, follow_time, follow_age
-
+from bot.utils import decapi_followage
 
 class FollowAge(Command):
     def match(self, bot, user, msg):
@@ -9,14 +8,9 @@ class FollowAge(Command):
 
     def run(self, bot, user, msg):
 
-        if user == bot.channel.replace('#', ''):
-            bot.write('Стример не следит за какналом.')
+        twitch_username = bot.channel.replace('#','')
+        follow = decapi_followage(twitch_username,user)
+        if 'Follow not found' in follow:
+            bot.write(user + ' ты не подписан!')
         else:
-            user_id = user_info(user)[0]['id']
-            streamer_id = bot.channel_id
-
-            if not follow_age(streamer_id, user_id):
-                bot.write(user + ' ты не следишь за каналом')
-            else:
-                followtime = follow_age(streamer_id, user_id)[0]['followed_at']
-                bot.write(user + ' ты следишь за каналом уже  ' + follow_time(followtime) + ' дней!')
+            bot.write(user + ' ты следишь за каналом уже ' + follow)

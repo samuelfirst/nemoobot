@@ -40,85 +40,28 @@ def get_app_access_token():
     return app_access_token
 
 
-def stream_info(channel_username):
+def decapi_followage(channel_username, user_username):
 
-    url = 'https://api.twitch.tv/helix/streams'
-    token = get_app_access_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Client-ID': CLIENT_ID
-    }
-    params = {
-        'user_login': channel_username
-    }
-    res = requests.get(url, headers=headers, params=params)
-    json_response = res.json()['data'] 
-    return json_response
-
-
-def time_manage(stream_start):
-    now = datetime.utcnow()
-    for ch in ["-", "T", "Z", ":"]:
-        stream_start = stream_start.replace(ch, "")
-
-    stream_start = datetime.strptime(stream_start, "%Y%m%d%H%M%S")
-    elapsed_time = now - stream_start
-    seconds = int(elapsed_time.total_seconds())
-
-    hours = seconds // 3600
-    minutes = (seconds % 3600) // 60
-    seconds = seconds % 60
+    url = 'https://decapi.me/twitch/followage'
     
-    var = str(hours) + ':' + str(minutes) + ':' + str(seconds)
-    return var
-
-
-def user_info(user_username):
-    url = 'https://api.twitch.tv/helix/users'
-    token = get_app_access_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Client-ID': CLIENT_ID
-    }
     params = {
-        'login': user_username
+        'channel': channel_username,
+        'user': user_username,
+        'lang': 'ru'
     }
 
-    res = requests.get(url, headers=headers, params=params)
-    json_response = res.json()['data'] 
-    return json_response
+    res = requests.get(url, params=params)
+    return res.text
 
 
-def follow_age(streamer, follower):
-    url = 'https://api.twitch.tv/helix/users/follows?'
-    token = get_app_access_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Client-ID': 'cj6u5ko0kn9bpdgajxrbz5ircahgff'
-    }
-
-    params = {
-        'from_id': follower,
-        'to_id': streamer
-    }
-
-    res = requests.get(url, headers=headers, params=params)
-    json_follow = res.json()['data']
+def decapi_uptime(channel_username):
     
-    return json_follow
+    url = 'https://decapi.me/twitch/uptime'
+    
+    params = {
+        'channel': channel_username,
+        'lang': 'ru'
+    }
 
-
-def follow_time(startfollow):
-    now = datetime.now()
-
-    for ch in ["-", "T", "Z", ":"]:
-        startfollow = startfollow.replace(ch, "")
-
-    startfollow = datetime.strptime(startfollow, "%Y%m%d%H%M%S")
-    diff = now - startfollow
-    diff = str(diff)
-
-    x = diff.split()
-
-    days = x[0]
-    return days
+    res = requests.get(url, params=params)
+    return res.text
