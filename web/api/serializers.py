@@ -51,10 +51,11 @@ class SettingSerializer(serializers.ModelSerializer):
     custom_commands = CustomCommandField(many=True, read_only=True)
     default_commands = serializers.ListField(child=serializers.CharField())
     antispam = serializers.ListField(child=serializers.CharField())
+    banned_words = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = Setting
         fields = [
             'user', 'default_commands', 'custom_commands', 'antispam',
-            'follow_notification',
+            'follow_notification', 'banned_words'
         ]
