@@ -7,6 +7,7 @@
         const oauth_token = "oauth:{{ settings.user.token.access_token }}"
 
         const xhr = new XMLHttpRequest()
+        var banned_words = {{ settings.banned_words|safe }}
     </script>
     <script type = "text/javascript" src="{% static 'js/api_requests.js' %}"></script>
     <script type = "text/javascript" src="{% static 'js/check_mods.js' %}"></script>
@@ -67,7 +68,26 @@
                         </div>
                     {% endif %}
                     {% endfor %}
+                    <div class="form-check text-center px-0">
+                      <label class="form-check-label" for="FormControlTextarea1">
+                        List of banned words:
+                      </label>
+                      <textarea class="form-control bg-dark text-light" placeholder="list of banned words: apple,pen,pineapple,pen" name="banned_words" id="FormControlTextarea1" rows="2"></textarea>
+                    </div>
                 </div>
+                <div class="col-sm">
+                <h2>Follow notification</h2>
+                <div class="form-check">
+                {% if settings.follow_notification%}
+                    <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault" checked>
+                {% else %}
+                    <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault">
+                {% endif %}
+                    <label class="form-check-label" for="flexCheckDefault">
+                    Follow notification
+                    </label>
+                </div>
+            </div>
             </div>
             <div class="row m-auto mt-3 mb-3">
                 <div class="col-sm">
@@ -102,4 +122,7 @@
         </form>
     </div>
     {% endif %}
+    <script type="text/javascript">
+        document.getElementById('FormControlTextarea1').innerHTML = banned_words
+    </script>
 {% endblock %}

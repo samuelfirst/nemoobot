@@ -1,4 +1,4 @@
-const apiBaseUrl = "https://nemoobot.ru/api/v1/"
+const apiBaseUrl = "http://localhost:8000/api/v1/"
 const customCommandsUrl = apiBaseUrl + 'custom_commands/'
 const settingsUrl = apiBaseUrl + 'settings/'
 const contentType = "application/json"
@@ -19,7 +19,7 @@ function getCookieByName(name) {
 
 function addNewCustomCommand(form) {
     var method = "POST"
-    var cmd_name = form.elements['new_cmd_name'].value.replace(/\s/g, '_')
+    var cmd_name = form.elements['new_cmd_name'].value.replace(/\s/g, '_').toLowerCase()
     var cmd_reply = form.elements['new_cmd_reply'].value
     var settings_id = form.name
 
@@ -55,7 +55,7 @@ function changeCustomCommand(commandId, changedData) {
 
     if (changedData.name == 'cmd_name') {
         var data = {
-            'name': changedData.value.replace(/\s/g, '_')
+            'name': changedData.value.replace(/\s/g, '_').toLowerCase()
         }
     }
     if (changedData.name == 'cmd_reply') {
@@ -101,12 +101,22 @@ function getChangedSettingsData(form) {
         }
     }
 
-    var followNotification = form.element['follow_notice'].checked
+    var followNotification = form.elements['follow_notice'].checked
+
+    var bannedWords = form.elements['banned_words'].value.replace(' ', '')
+    if (bannedWords === '') {
+        bannedWords = []
+    }
+    else {
+        bannedWords = bannedWords.split(',')
+    }
+
 
     return {
         'default_commands': defaultCommands,
         'antispam': antispamSettings,
-        'follow_notification': followNotification
+        'follow_notification': followNotification,
+        'banned_words': bannedWords
     }
 }
 
