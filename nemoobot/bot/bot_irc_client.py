@@ -1,4 +1,3 @@
-import os
 from typing import List
 from twisted.words.protocols import irc
 from twisted.internet import reactor, threads, task
@@ -50,7 +49,7 @@ class BotIRCClient(irc.IRCClient):
         logger.info(f"[{channel}] {user}: {message}")
         for bot in self.bots:
             if bot.channel == channel:
-                if bot.antispam_settings:
+                if bot.antispam.is_active:
                     bot.antispam_check(user, message)
                 bot.process_command(user, message)
 

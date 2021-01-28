@@ -1,4 +1,3 @@
-import re
 from typing import List
 from loguru import logger
 
@@ -14,10 +13,14 @@ class TwitchBot:
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
+        self.token = user['token']
+
         self.default_commands = default_commands
         self.custom_commands = custom_commands
         self.follow_notification = follow_notification
 
+        if banned_words is not None:
+            banned_words = set(banned_words)
         caps = 'caps' in antispam
         urls = 'urls' in antispam
         self.antispam = AntiSpam(
@@ -46,21 +49,9 @@ class TwitchBot:
             self, user, default_commands,
             custom_commands, antispam, follow_notification,
             banned_words=None):
-
-        self.channel = f"#{user['twitch_username']}"
-        self.channel_id = user['twitch_user_id']
-        self.default_commands = default_commands
-        self.custom_commands = custom_commands
-        self.follow_notification = follow_notification
-
-        caps = 'caps' in antispam
-        urls = 'urls' in antispam
-        self.antispam = AntiSpam(
-            is_active=True,
-            caps=caps,
-            urls=urls,
-            banned_words=banned_words
-        )
+        self.__init__(
+            user, default_commands, custom_commands,
+            antispam, follow_notification, banned_words)
         self.reload_commands()
 
     def load_commands(self):

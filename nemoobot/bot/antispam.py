@@ -22,7 +22,7 @@ class AntiSpam:
                 if re.findall(self.url_pattern, message):
                     return True, self.urls_message
             if self.banned_words:
-                words = re.findall(self.word_pattern, message)
+                words = re.findall(self.word_pattern, message.lower())
                 if self.banned_words & set(words):
                     return True, self.banned_words_message
         return False, ''
