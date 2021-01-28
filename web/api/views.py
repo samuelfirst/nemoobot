@@ -12,7 +12,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 
-class TokenViewSet(viewsets.ModelViewSet):
+class TokenViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Token.objects.all()
     serializer_class = TokenSerializer
 

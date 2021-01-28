@@ -1,4 +1,4 @@
-const apiBaseUrl = "http://localhost:8000/api/v1/"
+const apiBaseUrl = "https://nemoobot.ru/api/v1/"
 const customCommandsUrl = apiBaseUrl + 'custom_commands/'
 const settingsUrl = apiBaseUrl + 'settings/'
 const contentType = "application/json"
@@ -101,9 +101,12 @@ function getChangedSettingsData(form) {
         }
     }
 
+    var followNotification = form.element['follow_notice'].checked
+
     return {
         'default_commands': defaultCommands,
-        'antispam': antispamSettings
+        'antispam': antispamSettings,
+        'follow_notification': followNotification
     }
 }
 

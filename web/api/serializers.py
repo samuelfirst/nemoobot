@@ -4,11 +4,10 @@ from accounts.models import User, Token, Setting, CustomCommand
 
 
 class TokenSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Token
         fields = [
-            'access_token', 'refresh_token', 'expires_in',
+            'access_token', 'refresh_token', 'token_type', 'expires_in',
         ]
 
 
@@ -56,5 +55,6 @@ class SettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Setting
         fields = [
-            'user', 'default_commands', 'custom_commands', 'antispam'
+            'user', 'default_commands', 'custom_commands', 'antispam',
+            'follow_notification',
         ]

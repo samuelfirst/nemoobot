@@ -1,4 +1,5 @@
 import time
+
 import requests
 from django.conf import settings
 from asgiref.sync import async_to_sync
@@ -30,6 +31,28 @@ def get_user_settings_by_id(settings_id):
     return res.json()
 
 
+def get_list_user_settings():
+    url = f'{settings.BASE_API_URL}settings/'
+    res = requests.get(url)
+    return res.json()
+
+
 def send_message_to_ws(message):
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)("bot_commands",  message)
+    async_to_sync(channel_layer.group_send)("bot_commands", message)
+
+
+def get_app_token():
+    params = {
+        'client_id': settings.TWITCH_CLIENT_ID,
+        'client_secret': settings.TWITCH_CLIENT_SECRET,
+        'grant_type': 'client_credentials',
+
+    }
+    url = "https://id.twitch.tv/oauth2/token"
+    res = requests.post(url, params=params)
+    token_data = res.json()
+    access_token = token_data['access_token']
+    expires_in = token_data['expires_in']
+    expires_time = expires_in + int(time.time())
+    return access_token, expires_in, expires_time

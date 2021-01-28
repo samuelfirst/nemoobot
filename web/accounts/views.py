@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 
-from .models import Token, User, Setting, CustomCommand
+from .models import Token, Setting, CustomCommand
 from .utils import get_token_by_code
 from .forms import (
     CustomUserCreationForm, CustomUserChangeForm

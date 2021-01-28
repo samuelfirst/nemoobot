@@ -1,6 +1,7 @@
 import json
-
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+from accounts.tasks import send_command_to_bot
 
 
 class BotCommandsConsumer(AsyncWebsocketConsumer):
@@ -22,4 +23,8 @@ class BotCommandsConsumer(AsyncWebsocketConsumer):
             )
 
     async def command(self, event):
-        await self.send(json.dumps(event))
+        command = event['data']['command']
+        if command == 'start_bot':
+            send_command_to_bot.apply_async(('INIT',))
+        else:
+            await self.send(json.dumps(event))

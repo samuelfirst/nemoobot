@@ -7,7 +7,7 @@ from .models import User, Token, Setting, CustomCommand
 class TokenInline(admin.TabularInline):
     model = Token
     readonly_fields = (
-        'access_token', 'refresh_token', 'expires_in', 'expires_time',
+        'access_token', 'refresh_token', 'token_type', 'expires_in', 'expires_time',
     )
 
 
@@ -22,12 +22,12 @@ class CustomCommandInline(admin.TabularInline):
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('access_token', 'user',)
     readonly_fields = (
-        'access_token', 'refresh_token', 'expires_in', 'expires_time', 'user'
+        'access_token', 'refresh_token', 'token_type', 'expires_in', 'expires_time', 'user'
     )
 
     fieldsets = (
         ('Token', {'fields': (
-            'access_token', 'refresh_token', 'expires_in', 'expires_time',
+            'access_token', 'refresh_token', 'token_type', 'expires_in', 'expires_time',
         )}),
         ('User', {'fields': (
             'user',
@@ -51,7 +51,7 @@ class SettingAdmin(admin.ModelAdmin):
     fieldsets = (
         ('User', {'fields': ('user',)}),
         ('Settings', {'fields': (
-            'default_commands', 'antispam',
+            'default_commands', 'antispam', 'follow_notification'
         )}),
     )
 

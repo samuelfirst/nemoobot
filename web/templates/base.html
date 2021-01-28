@@ -25,6 +25,9 @@
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" aria-current="page" href="{% url 'profile'%}">Profile</a>
+                    {% if user.is_staff %}
+                    <a class="dropdown-item" aria-current="page" href="{% url 'admin:index' %}">Admin panel</a>
+                    {% endif %}
                     <a class="dropdown-item" aria-current="page" href="{% url 'logout'%}">Logout</a>
                   </ul>
                 </li>
