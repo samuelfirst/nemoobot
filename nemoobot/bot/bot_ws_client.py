@@ -20,7 +20,16 @@ class BotWebSocketClient(WebSocketClientProtocol):
         return None  # ask for defaults
 
     def onOpen(self):
-        pass
+        if not self.irc.is_started:
+            payload = {
+                'type': 'command',
+                'data': {
+                    'command': 'start_bot',
+                    'args': ''
+                }
+            }
+            self.sendMessage(json.dumps(payload).encode('utf8'))
+            self.irc.is_started = True
 
     def onMessage(self, payload, isBinary):
         if isBinary:
@@ -39,7 +48,11 @@ class BotWebSocketClient(WebSocketClientProtocol):
 
     def _process_command(self, command, args):
         try:
-            if command == 'RELOAD':
+            if command == 'INIT':
+                for settings in args:
+                    bot = TwitchBot(**settings)
+                    self.irc.add_bot(bot)
+            elif command == 'RELOAD':
                 self.irc.reload_bot(args)
             elif command == 'ADD':
                 bot = TwitchBot(**args)
@@ -47,6 +60,10 @@ class BotWebSocketClient(WebSocketClientProtocol):
             elif command == 'DELETE':
                 bot = TwitchBot(**args)
                 self.irc.delete_bot(bot)
+            elif command == 'NEW_FOLLOW':
+                for bot in self.irc.bots:
+                    if bot.channel_id == args.get('twitch_user_id'):
+                        bot.write(f'Welcome, {args.get("follower_name")}! Thank you for follow!')
         except KeyError as err:
             logger.error(err)
 
