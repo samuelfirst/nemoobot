@@ -7,7 +7,7 @@
     {% if user.token %}
       <h2>You connected to Twitch!</h2>
     {% else %}
-      <h2><a href="https://id.twitch.tv/oauth2/authorize?client_id=cj6u5ko0kn9bpdgajxrbz5ircahgff&redirect_uri=http://localhost:8000/connect_to_twitch&response_type=code&scope=user:edit+user:read:email+chat:edit+chat:read+channel:moderate&force_verify=true" class="text-white">Connect</a> to your Twitch to start using NeMooBot.</h2>
+      <h2><a href="https://id.twitch.tv/oauth2/authorize?client_id=cj6u5ko0kn9bpdgajxrbz5ircahgff&redirect_uri=http://localhost:8000/connect_to_twitch&response_type=code&scope=user:edit+user:read:email+chat:edit+chat:read+channel:moderate+user:edit:broadcast&force_verify=true" class="text-white">Connect</a> to your Twitch to start using NeMooBot.</h2>
     {% endif %}
   {% else %}
     <h2>Welcome!<br>Please <a href="{% url 'login'%}" class="text-white">login</a> or <a href="{% url 'signup'%}" class="text-white">sign up</a>!</h2>
