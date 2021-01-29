@@ -1,6 +1,7 @@
 const apiBaseUrl = "http://localhost:8000/api/v1/"
 const customCommandsUrl = apiBaseUrl + 'custom_commands/'
 const settingsUrl = apiBaseUrl + 'settings/'
+const noticeUrl = apiBaseUrl + 'notices/'
 const contentType = "application/json"
 const csrfToken = getCookieByName('csrftoken')
 
@@ -134,4 +135,42 @@ function changeSettings(settingsId, form) {
     }
 
     xhr.send(JSON.stringify(changedSettingsData))
+}
+
+function addNewNotice(form) {
+    var method = "POST"
+    var noticeText = form.elements['new_notice_text'].value
+    var noticeInterval = parseInt(form.elements['new_notice_interval'].value)
+    var settingsId = form.name
+
+    xhr.open(method, noticeUrl)
+    xhr.setRequestHeader("Content-type", contentType);
+    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+    xhr.onload = function () {
+        document.location.reload();
+    }
+
+    let data = {
+        "settings": settingsId,
+        "text": noticeText,
+        "interval": noticeInterval
+    }
+
+    xhr.send(JSON.stringify(data))
+}
+
+function deleteNotice(noticeId) {
+    var method = "DELETE"
+    var deleteCustomCommandsUrl = noticeUrl + noticeId + '/'
+
+    xhr.open(method, deleteCustomCommandsUrl)
+    xhr.setRequestHeader("Content-type", contentType);
+    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+    xhr.onload = function () {
+        document.location.reload();
+    }
+
+    xhr.send()
 }
