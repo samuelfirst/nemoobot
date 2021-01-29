@@ -57,7 +57,8 @@ class SettingAdmin(admin.ModelAdmin):
     fieldsets = (
         ('User', {'fields': ('user',)}),
         ('Settings', {'fields': (
-            'default_commands', 'antispam', 'follow_notification', 'banned_words'
+            'default_commands', 'antispam', 'follow_notification',
+            'follow_notification_text', 'banned_words'
         )}),
     )
 

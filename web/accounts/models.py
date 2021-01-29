@@ -46,6 +46,9 @@ class Setting(models.Model):
         default=list,
     )
     follow_notification = models.BooleanField(default=False)
+    follow_notification_text = models.TextField(
+        default='Welcome <username>! Thank you for follow!'
+    )
     banned_words = ArrayField(
         models.CharField(max_length=50, blank=True),
         default=list,

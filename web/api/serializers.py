@@ -74,5 +74,6 @@ class SettingSerializer(serializers.ModelSerializer):
         model = Setting
         fields = [
             'user', 'default_commands', 'custom_commands', 'antispam',
-            'follow_notification', 'banned_words', 'notices'
+            'follow_notification', 'follow_notification_text',
+            'banned_words', 'notices'
         ]
