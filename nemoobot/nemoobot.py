@@ -17,12 +17,12 @@ class BotFactory(protocol.ClientFactory):
 
     def clientConnectionLost(self, connector, reason):
         logger.info("Connection lost. Reason: %s" % reason)
-        protocol.scheduler.stop()
+        self.protocol.scheduler.shutdown(wait=False)
         connector.connect()
 
     def clientConnectionFailed(self, connector, reason):
         logger.debug("Connection failed. Reason: %s" % reason)
-        protocol.scheduler.stop()
+        self.protocol.scheduler.shutdown(wait=False)
 
 
 if __name__ == '__main__':

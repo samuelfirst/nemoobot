@@ -9,7 +9,7 @@ class TwitchBot:
     def __init__(
             self, user, default_commands,
             custom_commands, antispam, follow_notification,
-            notices, banned_words=None):
+            follow_notification_text, notices, banned_words=None):
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
@@ -17,7 +17,8 @@ class TwitchBot:
 
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.follow_notification = follow_notification
+        self.is_follow_notice_active = follow_notification
+        self.follow_notice_message = follow_notification_text
 
         self.jobs = dict()
         for notice in notices:
@@ -41,7 +42,6 @@ class TwitchBot:
 
         self.commands = list()
         self.commands_list: List[str] = list()
-
         self.load_commands()
 
     def __eq__(self, other):
@@ -56,14 +56,16 @@ class TwitchBot:
     def reload(
             self, user, default_commands,
             custom_commands, antispam, follow_notification,
-            notices, banned_words=None):
+            follow_notification_text, notices, banned_words=None):
+
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
         self.token = user['token']
 
         self.default_commands = default_commands
         self.custom_commands = custom_commands
-        self.follow_notification = follow_notification
+        self.is_follow_notice_active = follow_notification
+        self.follow_notice_message = follow_notification_text
 
         self.jobs = dict()
         for notice in notices:
@@ -122,6 +124,10 @@ class TwitchBot:
                 cmd.run(self, user, message)
             else:
                 pass
+
+    def follow_notice(self, user):
+        message = self.follow_notice_message.replace('<username>', user)
+        self.write(message)
 
     def write(self, message):
         if self.irc is not None:

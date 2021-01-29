@@ -63,7 +63,9 @@ class BotWebSocketClient(WebSocketClientProtocol):
             elif command == 'NEW_FOLLOW':
                 for bot in self.irc.bots:
                     if bot.channel_id == args.get('twitch_user_id'):
-                        bot.write(f'Welcome, {args.get("follower_name")}! Thank you for follow!')
+                        user = args.get("follower_name")
+                        if bot.is_follow_notice_active:
+                            bot.follow_notice(user)
             elif command == 'ADD_JOB':
                 self.irc.add_bot_job(args)
             elif command == 'REMOVE_JOB':
