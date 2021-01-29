@@ -1,4 +1,6 @@
 from typing import List
+
+from apscheduler.schedulers.twisted import TwistedScheduler
 from twisted.words.protocols import irc
 from twisted.internet import reactor, threads, task
 from loguru import logger
@@ -15,6 +17,7 @@ class BotIRCClient(irc.IRCClient):
     bots: List[TwitchBot] = []
     ws_factory = None
     is_started = False
+    scheduler = TwistedScheduler()
 
     def __init__(self):
         self.username = BOT_NICKNAME
@@ -29,6 +32,8 @@ class BotIRCClient(irc.IRCClient):
         # self.sendLine("CAP REQ :twitch.tv/membership")
         self.sendLine("CAP REQ :twitch.tv/commands")
         # self.sendLine("CAP REQ :twitch.tv/tags")
+
+        self.scheduler.start()
 
         for bot in self.bots:
             self.join_bot_channel(bot)
@@ -65,6 +70,18 @@ class BotIRCClient(irc.IRCClient):
         bot.irc = self
         self.join(bot.channel)
         self.joined(bot)
+        if bot.jobs:
+            for job in bot.jobs.items():
+                job_id = f'{bot.channel}_{job[0]}'
+                self.scheduler.add_job(
+                    bot.write,
+                    'interval',
+                    minutes=job[1]['interval'],
+                    id=job_id,
+                    kwargs={
+                        'message': job[1]['text']
+                    }
+                )
 
     def add_bot(self, bot):
         self.bots.append(bot)
@@ -86,3 +103,32 @@ class BotIRCClient(irc.IRCClient):
             if bot.channel_id == args['user']['twitch_user_id']:
                 bot.reload(**args)
                 logger.info(f'Bot in {bot.channel} was reloaded!')
+
+    def add_bot_job(self, args):
+        for bot in self.bots:
+            if bot.channel_id == args['user']['twitch_user_id']:
+                channel = args['user']['twitch_username']
+                job_text = args["job"]["text"]
+                job_interval = args["job"]["interval"]
+                job_id = f'#{channel}_{args["job"]["id"]}'
+                self.scheduler.add_job(
+                    bot.write,
+                    'interval',
+                    minutes=job_interval,
+                    id=job_id,
+                    kwargs={
+                        'message': job_text
+                    }
+                )
+                bot.jobs[args["job"]["id"]] = {
+                    'text': job_text,
+                    'interval': job_interval
+                }
+
+    def remove_bot_job(self, args):
+        for bot in self.bots:
+            if bot.channel_id == args['user']['twitch_user_id']:
+                channel = args['user']['twitch_username']
+                job_id = f'#{channel}_{args["job"]["id"]}'
+                self.scheduler.remove_job(job_id=job_id)
+                bot.jobs.pop(args["job"]["id"])

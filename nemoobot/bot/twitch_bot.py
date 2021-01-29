@@ -9,7 +9,7 @@ class TwitchBot:
     def __init__(
             self, user, default_commands,
             custom_commands, antispam, follow_notification,
-            banned_words=None):
+            notices, banned_words=None):
 
         self.channel = f"#{user['twitch_username']}"
         self.channel_id = user['twitch_user_id']
@@ -18,6 +18,13 @@ class TwitchBot:
         self.default_commands = default_commands
         self.custom_commands = custom_commands
         self.follow_notification = follow_notification
+
+        self.jobs = dict()
+        for notice in notices:
+            self.jobs[notice['id']] = {
+                'text': notice['text'],
+                'interval': notice['interval']
+            }
 
         if banned_words is not None:
             banned_words = set(banned_words)
@@ -31,6 +38,7 @@ class TwitchBot:
         )
 
         self.irc = None
+
         self.commands = list()
         self.commands_list: List[str] = list()
 
@@ -48,10 +56,33 @@ class TwitchBot:
     def reload(
             self, user, default_commands,
             custom_commands, antispam, follow_notification,
-            banned_words=None):
-        self.__init__(
-            user, default_commands, custom_commands,
-            antispam, follow_notification, banned_words)
+            notices, banned_words=None):
+        self.channel = f"#{user['twitch_username']}"
+        self.channel_id = user['twitch_user_id']
+        self.token = user['token']
+
+        self.default_commands = default_commands
+        self.custom_commands = custom_commands
+        self.follow_notification = follow_notification
+
+        self.jobs = dict()
+        for notice in notices:
+            self.jobs[notice['id']] = {
+                'text': notice['text'],
+                'interval': notice['interval']
+            }
+
+        if banned_words is not None:
+            banned_words = set(banned_words)
+        caps = 'caps' in antispam
+        urls = 'urls' in antispam
+        self.antispam = AntiSpam(
+            is_active=True,
+            caps=caps,
+            urls=urls,
+            banned_words=banned_words
+        )
+
         self.reload_commands()
 
     def load_commands(self):

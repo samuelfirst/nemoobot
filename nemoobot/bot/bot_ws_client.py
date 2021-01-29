@@ -64,6 +64,10 @@ class BotWebSocketClient(WebSocketClientProtocol):
                 for bot in self.irc.bots:
                     if bot.channel_id == args.get('twitch_user_id'):
                         bot.write(f'Welcome, {args.get("follower_name")}! Thank you for follow!')
+            elif command == 'ADD_JOB':
+                self.irc.add_bot_job(args)
+            elif command == 'REMOVE_JOB':
+                self.irc.remove_bot_job(args)
         except KeyError as err:
             logger.error(err)
 
@@ -72,7 +76,7 @@ class BotWebSocketClientFactory(WebSocketClientFactory, ReconnectingClientFactor
     protocol = BotWebSocketClient
 
     maxDelay = 10
-    maxRetries = 5
+    maxRetries = 10
 
     def startedConnecting(self, connector):
         logger.info('Started to connect.')
