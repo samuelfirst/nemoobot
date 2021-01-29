@@ -95,6 +95,29 @@
                 </div>
             </div>
         </form>
+        <form name="{{ settings.id }}" id="noticeForm">
+            {% csrf_token %}
+            <div class="row m-auto mt-3 mb-3 text-center">
+                <div class="col-sm">
+                    {% if notices %}
+                    <h2>Notification</h2>
+                    {% for notice in notices %}
+                    <div class="input-group mb-3">
+                      <input type="text"  class="form-control bg-dark text-light" style="width: 50%;" name="" value="{{ notice.text }}" aria-label="NoticeText" disabled>
+                      <input type="number"  class="form-control bg-dark text-light" name="" value="{{ notice.interval }}" aria-label="NoticeInterval" disabled>
+                      <button type="button" onclick="deleteNotice({{ notice.id }})" class="btn btn-danger" style="width: 170px;">Delete</button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <h2>Add new notification</h2>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control bg-dark text-light" style="width: 50%;" placeholder="text" name="new_notice_text" aria-label="NoticeText" required>
+                        <input type="number" class="form-control bg-dark text-light" placeholder="interval in minutes" name="new_notice_interval" aria-label="NoticeInterval" required>
+                        <button type="button" onclick="addNewNotice(this.closest('form'))"  class="btn btn-light" style="width: 175px;">Add new notification</button>
+                    </div>
+                </div>
+            </div>
+        </form>
         <form name="{{ settings.id }}" id="customCommandsForm">
             {% csrf_token %}
             <div class="row m-auto mt-3 mb-3 text-center">
@@ -106,7 +129,7 @@
                       <span class="input-group-text">!</span>
                       <input type="text"  class="form-control bg-dark text-light" placeholder="command" name="cmd_name" value="{{ cmd.name }}" aria-label="CmdName" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
                       <input type="text"  class="form-control bg-dark text-light" placeholder="reply text" name="cmd_reply" value="{{ cmd.reply }}" aria-label="CmdReply" onchange="changeCustomCommand({{ cmd.id }}, this.closest('input'))">
-                      <button type="button" onclick="deleteCustomCommand({{ cmd.id }})" class="btn btn-danger">Delete</button>
+                      <button type="button" onclick="deleteCustomCommand({{ cmd.id }})" class="btn btn-danger" style="width: 170px;">Delete</button>
                     </div>
                     {% endfor %}
                     {% endif %}
@@ -115,7 +138,7 @@
                         <span class="input-group-text">!</span>
                         <input type="text" class="form-control bg-dark text-light" placeholder="command" name="new_cmd_name" aria-label="CmdName" required>
                         <input class="form-control bg-dark text-light" placeholder="reply text" name="new_cmd_reply" aria-label="CmdReply" required>
-                        <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-light">Add new command</button>
+                        <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-light" style="width: 170px;">Add new command</button>
                     </div>
                 </div>
             </div>
