@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 
-from .models import Token, Setting, CustomCommand
+from .models import Token, Setting, CustomCommand, Notice
 from .utils import get_token_by_code
 from .forms import (
     CustomUserCreationForm, CustomUserChangeForm
@@ -66,10 +66,11 @@ def settings(request):
     if user_settings.exists():
         user_settings = user_settings.first()
         custom_commands = CustomCommand.objects.filter(settings_id=user_settings.id)
+        notices = Notice.objects.filter(settings_id=user_settings.id)
         context = {
             'settings': user_settings, 'custom_commands': custom_commands,
             'default_commands': ["uptime", "followage", "game", "title"],
-            'antispam_settings': ['urls', 'caps'],
+            'antispam_settings': ['urls', 'caps'], 'notices': notices
         }
         return render(request, 'settings.html', context)
     else:
