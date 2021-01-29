@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 
-from .models import CustomCommand, Setting, User, Token
-from .tasks import send_command_to_bot
+from .models import CustomCommand, Setting, User, Token, Notice
+from .tasks import send_command_to_bot, send_job_command_to_bot
 from .utils import get_app_token
 
 
@@ -59,3 +59,14 @@ def send_delete_command_to_bot(sender, **kwargs):
     result = send_command_to_bot.apply_async(('DELETE', settings.id))
     # if result.get():
     #     return
+
+
+@receiver(post_save, sender=Notice)
+def send_add_job_command_to_bot(sender, instance, **kwargs):
+    send_job_command_to_bot.apply_async(('ADD_JOB', instance.id))
+
+
+@receiver(post_delete, sender=Notice)
+def send_remove_job_command_to_bot(sender, instance, **kwargs):
+    res = send_job_command_to_bot.apply_async(('REMOVE_JOB', instance.id))
+    res.get()
