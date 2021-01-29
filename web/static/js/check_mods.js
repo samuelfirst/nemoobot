@@ -26,4 +26,4 @@ function isBotChatModerator (chatters) {
 }
 
 getChatters()
-setInterval(getChatters, 20000)
+setInterval(getChatters, 75000)
