@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Token, Setting, CustomCommand
+from .models import User, Token, Setting, CustomCommand, Notice
 
 
 class TokenInline(admin.TabularInline):
@@ -17,6 +17,12 @@ class CustomCommandInline(admin.TabularInline):
         'name', 'reply',
     )
 
+
+class NoticeInline(admin.TabularInline):
+    model = Notice
+    readonly_fields = (
+        'id', 'text', 'interval',
+    )
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
@@ -47,7 +53,7 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Setting)
 class SettingAdmin(admin.ModelAdmin):
-    inlines = (CustomCommandInline,)
+    inlines = (CustomCommandInline, NoticeInline)
     fieldsets = (
         ('User', {'fields': ('user',)}),
         ('Settings', {'fields': (
@@ -58,3 +64,4 @@ class SettingAdmin(admin.ModelAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(CustomCommand)
+admin.site.register(Notice)

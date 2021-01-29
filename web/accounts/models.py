@@ -66,3 +66,16 @@ class CustomCommand(models.Model):
 
     def __str__(self):
         return f"CustomCommand {self.name} user {self.settings.user.pk}"
+
+
+class Notice(models.Model):
+    settings = models.ForeignKey(
+        Setting, on_delete=models.CASCADE,
+        related_name='notices',
+        related_query_name='notice',
+    )
+    text = models.TextField()
+    interval = models.IntegerField()
+
+    def __str__(self):
+        return f'Notice {self.id} user {self.settings.user.pk}'
