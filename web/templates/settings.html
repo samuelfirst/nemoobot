@@ -68,26 +68,38 @@
                         </div>
                     {% endif %}
                     {% endfor %}
-                    <div class="form-check text-center px-0">
+                    <div class="form-check px-0 mt-2">
                       <label class="form-check-label" for="FormControlTextarea1">
                         List of banned words:
                       </label>
-                      <textarea class="form-control bg-dark text-light" placeholder="list of banned words: apple,pen,pineapple,pen" name="banned_words" id="FormControlTextarea1" rows="2"></textarea>
+                      <textarea class="form-control mt-1 bg-dark text-light" style="width: 75%;" placeholder="list of banned words: apple,pen,pineapple,pen" name="banned_words" id="FormControlTextarea1" rows="2"></textarea>
+                      <div id="bannedWordsHelpBlock" class="form-text mb-2">
+                        Example: apple,pen,pineapple,pen
+                      </div>
                     </div>
                 </div>
                 <div class="col-sm">
-                <h2>Follow notification</h2>
-                <div class="form-check">
-                {% if settings.follow_notification%}
-                    <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault" checked>
-                {% else %}
-                    <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault">
-                {% endif %}
-                    <label class="form-check-label" for="flexCheckDefault">
-                    Follow notification
-                    </label>
+                    <h2>Follow notification</h2>
+                    <div class="form-check">
+                    {% if settings.follow_notification%}
+                        <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault" checked>
+                    {% else %}
+                        <input class="form-check-input" type="checkbox" name="follow_notice" value="" id="flexCheckDefault">
+                    {% endif %}
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Follow notification
+                        </label>
+                    </div>
+                    <div class="form-check px-0 mt-2">
+                      <label class="form-check-label" for="FormControlTextarea2">
+                        Notification message:
+                      </label>
+                      <textarea class="form-control mt-1 bg-dark text-light" style="width: 75%;" placeholder="Welcome <username>!" name="follow_notification_text" id="FormControlTextarea2" rows="2">{{ settings.follow_notification_text }}</textarea>
+                        <div id="followNoticeHelpBlock" class="form-text mb-2">
+                            &lt;username&gt; will be change to new follower's username.
+                        </div>
+                    </div>
                 </div>
-            </div>
             </div>
             <div class="row m-auto mt-3 mb-3">
                 <div class="col-sm">
