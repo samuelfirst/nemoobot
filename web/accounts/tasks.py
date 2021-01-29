@@ -4,7 +4,7 @@ from django.conf import settings
 from celery import shared_task
 
 from twitch_webhook.tasks import create_subscription
-from .models import User, Token
+from .models import User, Token, Notice
 from .utils import (
     get_user_settings_by_id, get_list_user_settings, send_message_to_ws,
     get_app_token
@@ -103,3 +103,37 @@ def send_command_to_bot(command, settings_id=None):
             return
     send_message_to_ws(message)
     return 'Message sent to ws'
+
+
+@shared_task
+def send_job_command_to_bot(command, notice_id):
+    notice = Notice.objects.get(pk=notice_id)
+    user = notice.settings.user
+    args = {
+        'user': {
+            'twitch_username': user.twitch_username,
+            'twitch_user_id': user.twitch_user_id
+        },
+        'job': {
+            'id': notice.id,
+            'text': notice.text,
+            'interval': notice.interval
+        }
+    }
+    if command == "ADD_JOB":
+        message = {
+            "type": "command",
+            "data": {
+                "command": command,
+                "args": args
+            }
+        }
+    elif command == "REMOVE_JOB":
+        message = {
+            "type": "command",
+            "data": {
+                "command": command,
+                "args": args
+            }
+        }
+    send_message_to_ws(message)
