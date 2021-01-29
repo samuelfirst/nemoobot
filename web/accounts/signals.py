@@ -66,7 +66,7 @@ def send_add_job_command_to_bot(sender, instance, **kwargs):
     send_job_command_to_bot.apply_async(('ADD_JOB', instance.id))
 
 
-@receiver(post_delete, sender=Notice)
+@receiver(pre_delete, sender=Notice)
 def send_remove_job_command_to_bot(sender, instance, **kwargs):
     res = send_job_command_to_bot.apply_async(('REMOVE_JOB', instance.id))
     res.get()
