@@ -103,6 +103,7 @@ function getChangedSettingsData(form) {
     }
 
     var followNotification = form.elements['follow_notice'].checked
+    var followNotificationText = form.elements['follow_notification_text'].value
 
     var bannedWords = form.elements['banned_words'].value.replace(' ', '')
     if (bannedWords === '') {
@@ -117,6 +118,7 @@ function getChangedSettingsData(form) {
         'default_commands': defaultCommands,
         'antispam': antispamSettings,
         'follow_notification': followNotification,
+        'follow_notification_text': followNotificationText,
         'banned_words': bannedWords
     }
 }
