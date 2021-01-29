@@ -37,11 +37,11 @@ def create_subscription(user_id, subscription_type):
         "type": subscription_type,
         "version": "1",
         "condition": {
-            "broadcaster_user_id": user.twitch_user_id
+            "broadcaster_user_id": f"{user.twitch_user_id}"
         },
         "transport": {
             "method": "webhook",
-            "callback": f"{os.getenv('DJANGO_HOST')}webhook/follows/{user.twitch_user_id}/",
+            "callback": f"{os.getenv('DJANGO_HOST')}webhooks/follows/{user.twitch_user_id}/",
             "secret": os.getenv('WEBHOOK_SECRET')
         }
     }
