@@ -12,5 +12,7 @@ class FollowAge(Command):
         follow = decapi_followage(twitch_username,user)
         if 'Follow not found' in follow:
             bot.write(user + ' ты не подписан!')
+        elif twitch_username == user:
+            bot.write('Сам на себя не подпишешься, никто не подпишется')
         else:
             bot.write(user + ' ты следишь за каналом уже ' + follow)
