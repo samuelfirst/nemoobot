@@ -20,7 +20,7 @@ class BotWebSocketClient(WebSocketClientProtocol):
         return None  # ask for defaults
 
     def onOpen(self):
-        if not self.irc.is_started:
+        if not self.irc.is_started and not self.irc.bots:
             payload = {
                 'type': 'command',
                 'data': {

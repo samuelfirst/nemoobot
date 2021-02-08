@@ -26,14 +26,6 @@ class BotFactory(protocol.ClientFactory):
 
 
 if __name__ == '__main__':
-
-    # create bot instances
-    # bots = list()
-    # for settings in load_user_settings():
-    #     bot = TwitchBot(**settings)
-    #     bots.append(bot)
-    #
-    # BotIRCClient.bots = bots
     BotIRCClient.ws_factory = BotWebSocketClientFactory()
 
     reactor.connectTCP('irc.chat.twitch.tv', 6667, BotFactory())
