@@ -1,8 +1,8 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 
 from .serializers import (
     UserSerializer, TokenSerializer, SettingSerializer,
-    CustomCommandSerializer, NoticeSerializer
+    CustomCommandSerializer, NoticeSerializer, CreateUserSerializer
 )
 from accounts.models import Token, User, Setting, CustomCommand, Notice
 
@@ -33,3 +33,9 @@ class NoticeViewSet(viewsets.ModelViewSet):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class UserCreateView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = CreateUserSerializer
+    permission_classes = [permissions.AllowAny]
