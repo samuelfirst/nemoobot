@@ -15,7 +15,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer for create new user"""
     class Meta:
         model = User
-        fields = ('username', 'email',)
+        fields = ('username', 'email', 'password')
         write_only_fields = ('password',)
         read_only_fields = ('id',)
 
@@ -23,8 +23,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
         )
 
         user.set_password(validated_data['password'])
