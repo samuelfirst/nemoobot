@@ -19,6 +19,6 @@ urlpatterns = [
     path('webhooks/', include('twitch_webhook.urls')),
     path('api/v1/', include('api.urls')),
     # JWT auth
-    url(r'^api/v1/auth/obtain_token/', obtain_jwt_token),
+    url(r'^api/v1/auth/token/', obtain_jwt_token),
     url(r'^api/v1/auth/refresh_token/', refresh_jwt_token),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
