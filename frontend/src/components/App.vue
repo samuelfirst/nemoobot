@@ -1,17 +1,19 @@
 <template>
-    <div id="app">
-        <Login></Login>
-    </div>
+    <a href="" class="text-light" style="margin: 90%;" v-on:click="logout" v-if="this.$store.getters['auth/loggedIn']">Logout</a>
+    <router-view />
 </template>
 
 <script>
-import Login from './components/Login.vue';
-
 export default {
   name: 'App',
-  components: {
-    Login
-  },
+  methods: {
+    logout: function () {
+        this.$store.dispatch('auth/logoutUser')
+        .then(() => {
+          this.$router.push('/login')
+        })
+    }
+  }
 }
 </script>
 
@@ -26,7 +28,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
-  color: #2c3e50;
   width: 100vw;
   min-width: 300px;
   max-width: 1000px;
