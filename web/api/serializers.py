@@ -30,6 +30,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
         return user
 
+
 class UserSerializer(serializers.ModelSerializer):
     token = TokenSerializer()
 
