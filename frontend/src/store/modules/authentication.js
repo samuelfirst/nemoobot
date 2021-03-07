@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const state = () => ({
+     username: localStorage.getItem('username') || null,
      accessToken: localStorage.getItem('access_token') || null, // makes sure the user is logged in even after
     // refreshing the page
      APIData: ''
@@ -15,6 +16,16 @@ const getters = {
 const mutations = {
     updateLocalStorage (state, access) {
       localStorage.setItem('access_token', access)
+      state.accessToken = access
+    },
+    updateUsername (state, username) {
+      localStorage.setItem('username', username)
+      state.username = username
+    },
+    remove (state, username, access) {
+      localStorage.removeItem('username')
+      localStorage.removeItem('access_token')
+      state.username = username
       state.accessToken = access
     },
     updateAccess (state, access) {
@@ -47,8 +58,12 @@ const actions = {
       .then(
         response => {
           context.commit('updateLocalStorage', response.data.token)
+          context.commit('updateUsername', data.username)
         }
       )
+    },
+    async logoutUser (context) {
+        context.commit('remove', {username: null, access: null})
     }
 }
 
