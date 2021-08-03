@@ -29,6 +29,8 @@ function addNewCustomCommand(form) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make funtion to update custom commands list
         document.location.reload();
     }
 
@@ -51,6 +53,8 @@ function changeCustomCommand(commandId, changedData) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make funtion to update custom commands list
         document.location.reload();
     }
 
@@ -78,6 +82,8 @@ function deleteCustomCommand(commandId) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make funtion to update custom commands list
         document.location.reload();
     }
 
@@ -133,6 +139,8 @@ function changeSettings(settingsId, form) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make function to update settings
         document.location.reload();
     }
 
@@ -150,6 +158,8 @@ function addNewNotice(form) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make function to update notice list
         document.location.reload();
     }
 
@@ -171,6 +181,8 @@ function deleteNotice(noticeId) {
     xhr.setRequestHeader("X-CSRFToken", csrfToken);
 
     xhr.onload = function () {
+        // TODO
+        // make function to update notice list
         document.location.reload();
     }
 

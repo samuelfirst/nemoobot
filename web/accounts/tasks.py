@@ -1,18 +1,22 @@
-import time
+from typing import Union
+
 import requests
+import time
+
 from django.conf import settings
 from celery import shared_task
 
-from twitch_webhook.tasks import create_subscription
+from web.twitch_webhook.tasks import create_subscription
 from .models import User, Token, Notice
 from .utils import (
-    get_user_settings_by_id, get_list_user_settings, send_message_to_ws,
+    get_user_settings_by_id, get_list_user_settings, send_message_to_queue,
     get_app_token
 )
 
 
 @shared_task
-def set_twitch_username_and_id_to_user(user_id):
+def set_twitch_username_and_id_to_user(user_id: int) -> str:
+    """Get user info from Twitch and save it for user"""
     user = User.objects.get(pk=user_id)
     url = 'https://id.twitch.tv/oauth2/validate'
     token = user.token.access_token
@@ -23,11 +27,8 @@ def set_twitch_username_and_id_to_user(user_id):
     res = requests.get(url, headers=headers)
     res = res.json()
 
-    twitch_username = res['login']
-    twitch_user_id = res['user_id']
-
-    user.twitch_username = twitch_username
-    user.twitch_user_id = twitch_user_id
+    user.twitch_username = res['login']
+    user.twitch_user_id = res['user_id']
     user.is_connected_to_twitch = True
 
     user.save(update_fields=[
@@ -39,7 +40,8 @@ def set_twitch_username_and_id_to_user(user_id):
 
 
 @shared_task
-def refresh_access_token(token_id):
+def refresh_access_token(token_id: int) -> str:
+    """Get token id and refresh token info"""
     token = Token.objects.get(pk=token_id)
     if token.token_type == 'userToken':
         url = 'https://id.twitch.tv/oauth2/token'
@@ -52,25 +54,21 @@ def refresh_access_token(token_id):
         res = requests.post(url, params=params)
         res = res.json()
 
-        access_token = res['access_token']
-        expires_in = res['expires_in']
-        expires_time = expires_in + int(time.time())
-
-        token.access_token = access_token
-        token.expires_in = expires_in
-        token.expires_time = expires_time
-        token.save()
+        token.access_token = res['access_token']
+        token.expires_in = res['expires_in']
+        token.expires_time = token.expires_in + int(time.time())
     elif token.token_type == 'appToken':
         access_token, expires_in, expires_time = get_app_token()
         token.access_token = access_token
         token.expires_in = expires_in
         token.expires_time = expires_time
-        token.save()
+    token.save()
     return f'{token} was refreshed'
 
 
 @shared_task
-def check_twitch_access_token_freshness():
+def check_twitch_access_token_freshness() -> None:
+    """Check access token freshness if expire time less then 60 seconds, create task to refrsesh token"""
     tokens = Token.objects.all()
     for token in tokens:
         freshness_time = token.expires_time - int(time.time())
@@ -79,34 +77,31 @@ def check_twitch_access_token_freshness():
 
 
 @shared_task
-def send_command_to_bot(command, settings_id=None):
+def send_command_to_bot(command: str, settings_id: int = None) -> Union[str, None]:
     if settings_id is not None:
         settings = get_user_settings_by_id(settings_id)
-        message = {
-            "type": "command",
-            "data": {
-                "command": command,
-                "args": settings
-            }
-        }
+        args = settings
     else:
+        # TODO fix this shit
         list_settings = get_list_user_settings()
         if list_settings:
-            message = {
-                "type": "command",
-                "data": {
-                    "command": command,
-                    "args": list_settings
-                }
-            }
+            args = list_settings
         else:
             return
-    send_message_to_ws(message)
+
+    message = {
+        "type": "command",
+        "data": {
+            "command": command,
+            "args": args
+        }
+    }
+    send_message_to_queue(message)
     return 'Message sent to ws'
 
 
 @shared_task
-def send_job_command_to_bot(command, notice_id):
+def send_job_command_to_bot(command: str, notice_id: int) -> None:
     notice = Notice.objects.get(pk=notice_id)
     user = notice.settings.user
     args = {
@@ -120,6 +115,7 @@ def send_job_command_to_bot(command, notice_id):
             'interval': notice.interval
         }
     }
+    message = {}
     if command == "ADD_JOB":
         message = {
             "type": "command",
@@ -136,4 +132,4 @@ def send_job_command_to_bot(command, notice_id):
                 "args": args
             }
         }
-    send_message_to_ws(message)
+    send_message_to_queue(message)

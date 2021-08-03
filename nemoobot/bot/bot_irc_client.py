@@ -5,11 +5,11 @@ from twisted.words.protocols import irc
 from twisted.internet import reactor, threads, task
 from loguru import logger
 
-from bot.config import (
+from nemoobot.bot.config import (
     BOT_NICKNAME, CLIENT_ID, BOT_AUTH_TOKEN,
     WS_HOST, WS_PORT
 )
-from bot.twitch_bot import TwitchBot
+from nemoobot.bot.twitch_bot import TwitchBot
 
 
 class BotIRCClient(irc.IRCClient):
@@ -24,7 +24,9 @@ class BotIRCClient(irc.IRCClient):
         self.client_id = CLIENT_ID
         self.password = BOT_AUTH_TOKEN
         # set irc attribute for websocket factory's protocol
-        self.ws_factory.protocol.irc = self
+        if self.ws_factory is not None:
+            self.ws_factory.protocol.irc = self
+            self.ws_factory.protocol._load_commands()
 
     def signedOn(self):
         self.factory.wait_time = 1
@@ -35,12 +37,13 @@ class BotIRCClient(irc.IRCClient):
 
         self.scheduler.start()
 
-        for bot in self.bots:
-            self.join_bot_channel(bot)
-
         # connect to websocket
         if self.ws_factory is not None:
             reactor.connectTCP(WS_HOST, WS_PORT, self.ws_factory)
+
+        # connect to twitch chat channels if any bots exist
+        for bot in self.bots:
+            self.join_bot_channel(bot)
 
     def lineReceived(self, line):
         self.parse_line(line.decode('utf-8'))
@@ -79,13 +82,12 @@ class BotIRCClient(irc.IRCClient):
                     minutes=job[1]['interval'],
                     id=job_id,
                     kwargs={
-                        'message': job[1]['text']
-                    }
+                        'message': job[1]['text'],
+                    },
                 )
 
     def add_bot(self, bot):
         self.bots.append(bot)
-        self.join_bot_channel(bot)
 
     def delete_bot(self, delete_bot):
         for bot in self.bots:
@@ -101,8 +103,8 @@ class BotIRCClient(irc.IRCClient):
     def reload_bot(self, args):
         for bot in self.bots:
             if bot.channel_id == args['user']['twitch_user_id']:
-                bot.reload(**args)
                 logger.info(f'Bot in {bot.channel} was reloaded!')
+                bot.reload(**args)
 
     def add_bot_job(self, args):
         for bot in self.bots:

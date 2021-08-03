@@ -1,5 +1,5 @@
 import requests
-from bot.config import CLIENT_ID, CLIENT_SECRET, BASE_DRF_API_URL
+from nemoobot.bot.config import CLIENT_ID, CLIENT_SECRET, BASE_DRF_API_URL
 
 API_SETTINGS_URL = BASE_DRF_API_URL + 'settings/'
 

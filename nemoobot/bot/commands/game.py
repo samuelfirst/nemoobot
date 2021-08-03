@@ -1,15 +1,11 @@
-from .command import Command
-from bot.utils import (
+from nemoobot.bot.commands import Command
+from nemoobot.bot.utils import (
     stream_info, set_new_stream_game,
     get_game_id_by_game_name, channel_info
 )
 
 
 class Game(Command):
-    def match(self, bot, user, msg):
-        cmd = msg.split(' ')[0]
-        return cmd == '!game'
-
     def run(self, bot, user, msg):
 
         twitch_username = bot.channel.replace('#', '')

@@ -1,14 +1,9 @@
-from .command import Command
+from nemoobot.bot.commands import Command
 from bot.utils import stream_info, set_new_stream_title, channel_info
 
 
 class Title(Command):
-    def match(self, bot, user, msg):
-        cmd = msg.split(' ')[0]
-        return cmd == '!title'
-
     def run(self, bot, user, msg):
-
         token = bot.token
         twitch_username = bot.channel.replace('#', '')
         info = channel_info(str(bot.channel_id), token)

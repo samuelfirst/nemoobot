@@ -1,6 +1,6 @@
 import os
 import requests
-from .command import Command
+from nemoobot.bot.commands import Command
 
 
 class Reload(Command):
@@ -25,10 +25,6 @@ class Reload(Command):
                 )
 
         return user_settings
-
-    def match(self, bot, user, msg):
-        cmd = msg.split(' ')[0]
-        return cmd == '!reload'
 
     def run(self, bot, user, msg):
         user_settings = self.load_user_settings_by_channel_id(bot.channel_id)

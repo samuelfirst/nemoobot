@@ -24,6 +24,7 @@ class NoticeInline(admin.TabularInline):
         'id', 'text', 'interval',
     )
 
+
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('access_token', 'user',)

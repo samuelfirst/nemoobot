@@ -1,8 +1,8 @@
-from typing import List
 from loguru import logger
+from typing import List, Union, Iterable, Tuple
 
-import bot.commands as commands
-from bot.antispam import AntiSpam
+import nemoobot.bot.commands as commands
+from nemoobot.bot.antispam import AntiSpam
 
 
 class TwitchBot:
@@ -15,6 +15,7 @@ class TwitchBot:
         self.channel_id = user['twitch_user_id']
         self.token = user['token']
 
+        self.command_prefix = '!'
         self.default_commands = default_commands
         self.custom_commands = custom_commands
         self.is_follow_notice_active = follow_notification
@@ -102,7 +103,7 @@ class TwitchBot:
         for cmd in self.commands:
             try:
                 commands_list.append(cmd.name.lower())
-            except:
+            except AttributeError:
                 commands_list.append(f'!{cmd.__class__.__name__.lower()}')
         self.commands_list = commands_list
 
@@ -118,12 +119,16 @@ class TwitchBot:
             self.write(f'{user} {warn_message}')
 
     def process_command(self, user, message):
+        cmd_name, args = self._parse_command(message)
+        if not cmd_name:
+            return
         for cmd in self.commands:
-            if cmd.match(self, user, message):
+            if cmd.match(self, user, cmd_name, args):
                 logger.debug(f'[{self.channel}] {cmd.__class__.__name__} command running')
                 cmd.run(self, user, message)
-            else:
-                pass
+                return
+        self.write('Unknown command.')
+        self.write(f'Commands list: {", ".join(self.commands_list)}')
 
     def follow_notice(self, user):
         message = self.follow_notice_message.replace('<username>', user)
@@ -145,3 +150,9 @@ class TwitchBot:
     def unban(self, user):
         unban_message = f"/unban {user}"
         self.write(unban_message)
+
+    def _parse_command(self, message: str) -> Union[Tuple[str, Iterable], Tuple[None, None]]:
+        if message.startswith(self.command_prefix):
+            command_name, *command_args = message[1:].split()
+            return command_name, command_args
+        return None, None

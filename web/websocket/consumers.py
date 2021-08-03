@@ -4,9 +4,17 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from accounts.tasks import send_command_to_bot
 
 
+ROOM_GROOP_NAME = 'bot_commands'
+
+
+class Commands:
+    START = 'start_bot'
+    INIT_BOT = 'INIT'
+
+
 class BotCommandsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_group_name = 'bot_commands'
+        self.room_group_name = ROOM_GROOP_NAME
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -24,7 +32,7 @@ class BotCommandsConsumer(AsyncWebsocketConsumer):
 
     async def command(self, event):
         command = event['data']['command']
-        if command == 'start_bot':
-            send_command_to_bot.apply_async(('INIT',))
+        if command == Commands.START:
+            send_command_to_bot.apply_async((Commands.INIT_BOT,))
         else:
             await self.send(json.dumps(event))
