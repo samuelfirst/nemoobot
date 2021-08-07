@@ -38,6 +38,7 @@ def get_list_user_settings():
 
 
 def send_message_to_ws(message):
+    print('sending message to ws')
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)("bot_commands", message)
 

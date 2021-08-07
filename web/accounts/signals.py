@@ -57,8 +57,8 @@ def send_delete_command_to_bot(sender, **kwargs):
     settings = kwargs.get('instance')
     # waiting for result of task and then delete settings
     result = send_command_to_bot.apply_async(('DELETE', settings.id))
-    # if result.get():
-    #     return
+    if result.get():
+         return
 
 
 @receiver(post_save, sender=Notice)

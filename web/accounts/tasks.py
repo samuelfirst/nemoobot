@@ -91,6 +91,7 @@ def send_command_to_bot(command, settings_id=None):
         }
     else:
         list_settings = get_list_user_settings()
+        print(list_settings)
         if list_settings:
             message = {
                 "type": "command",

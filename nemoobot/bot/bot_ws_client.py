@@ -30,6 +30,7 @@ class BotWebSocketClient(WebSocketClientProtocol):
             }
             self.sendMessage(json.dumps(payload).encode('utf8'))
             self.irc.is_started = True
+            logger.info('Sending start_bot command to get bot settings')
 
     def onMessage(self, payload, isBinary):
         if isBinary:
@@ -85,8 +86,8 @@ class BotWebSocketClientFactory(WebSocketClientFactory, ReconnectingClientFactor
 
     def clientConnectionLost(self, connector, reason):
         logger.info(f'Lost connection. Reason: {format(reason)}.')
-        ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
+        self.retry(connector)
 
     def clientConnectionFailed(self, connector, reason):
         logger.info(f'Connection failed. Reason: {format(reason)}.')
-        ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
+        self.retry(connector)
