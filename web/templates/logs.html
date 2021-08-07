@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content%}
+  <div class="container mt-3 text-center">
+    <div>
+        <p>Download logs</p>
+        {% for filename in filenames %}
+            <div>
+                {{ filename }}
+                <button type="button" onclick="location.href='{% url 'logs' %}?filename={{ filename }}';"  class="btn btn-light" style="width: 175px;">Download</button>
+            </div>
+        {% endfor %}
+    </div>
+  </div>
+{% endblock %}

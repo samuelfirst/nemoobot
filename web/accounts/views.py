@@ -1,13 +1,11 @@
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
 
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import Token, Setting, CustomCommand, Notice
-from .utils import get_token_by_code
-from .forms import (
-    CustomUserCreationForm, CustomUserChangeForm
-)
 from .tasks import set_twitch_username_and_id_to_user
+from .utils import get_token_by_code, get_log_files_filenames
 
 
 def index(request):
@@ -73,5 +71,21 @@ def settings(request):
             'antispam_settings': ['urls', 'caps'], 'notices': notices
         }
         return render(request, 'settings.html', context)
+    else:
+        return redirect('index')
+
+
+@login_required()
+def logs(request):
+    if request.user.is_staff:
+        query = request.GET
+        filename = query.get('filename', '')
+        filenames = get_log_files_filenames()
+        if filename and filename in filenames:
+            return {'downloading'}
+        context = {
+            'filenames': filenames,
+        }
+        return render(request, 'logs.html', context)
     else:
         return redirect('index')

@@ -45,7 +45,7 @@ class BotWebSocketClient(WebSocketClientProtocol):
                 self._process_command(command, args)
 
     def onClose(self, wasClean, code, reason):
-        logger.info("WebSocket connection closed: {0}".format(reason))
+        logger.info("{1}. WebSocket connection closed: {0}".format(reason, code))
 
     def _process_command(self, command, args):
         try:

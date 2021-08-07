@@ -27,6 +27,7 @@
                     <a class="dropdown-item" aria-current="page" href="{% url 'profile'%}">Profile</a>
                     {% if user.is_staff %}
                     <a class="dropdown-item" aria-current="page" href="{% url 'admin:index' %}">Admin panel</a>
+                    <a class="dropdown-item" aria-current="page" href="{% url 'logs' %}">Logs</a>
                     {% endif %}
                     <a class="dropdown-item" aria-current="page" href="{% url 'logout'%}">Logout</a>
                   </ul>

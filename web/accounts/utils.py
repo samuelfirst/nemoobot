@@ -1,4 +1,6 @@
+import os
 import time
+from typing import List
 
 import requests
 from django.conf import settings
@@ -57,3 +59,11 @@ def get_app_token():
     expires_in = token_data['expires_in']
     expires_time = expires_in + int(time.time())
     return access_token, expires_in, expires_time
+
+
+def get_log_files_filenames() -> List[str]:
+    """
+    Get filenames of log files
+    """
+    filenames = [filename for filename in os.walk('../../log') if filename.endswith('.log')]
+    return filenames
