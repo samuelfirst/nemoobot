@@ -32,15 +32,17 @@ class Token(models.Model):
 
 
 class Setting(models.Model):
-
+    # TODO move to api
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    # TODO make jsonb field
     default_commands = ArrayField(
         models.CharField(max_length=50, blank=True),
         default=list,
     )
+    # TODO make jsonb field
     antispam = ArrayField(
         models.CharField(max_length=50, blank=True),
         default=list,
@@ -59,6 +61,7 @@ class Setting(models.Model):
 
 
 class CustomCommand(models.Model):
+    # TODO move to api
     settings = models.ForeignKey(
         Setting, on_delete=models.CASCADE,
         related_name='custom_commands',
@@ -72,6 +75,7 @@ class CustomCommand(models.Model):
 
 
 class Notice(models.Model):
+    # TODO move to api
     settings = models.ForeignKey(
         Setting, on_delete=models.CASCADE,
         related_name='notices',
