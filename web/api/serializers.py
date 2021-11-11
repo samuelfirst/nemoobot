@@ -23,12 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserField(serializers.RelatedField):
     def to_representation(self, value):
-        user_data = {
+        return {
             'twitch_username': value.twitch_username,
             'twitch_user_id': value.twitch_user_id,
             'token': value.token.access_token,
         }
-        return user_data
 
 
 class CustomCommandSerializer(serializers.ModelSerializer):
@@ -39,21 +38,19 @@ class CustomCommandSerializer(serializers.ModelSerializer):
 
 class CustomCommandField(serializers.RelatedField):
     def to_representation(self, value):
-        command_data = {
+        return {
             'name': value.name,
             'reply': value.reply
         }
-        return command_data
 
 
 class NoticeField(serializers.RelatedField):
     def to_representation(self, value):
-        notice_data = {
+        return {
             'id': value.id,
             'text': value.text,
             'interval': value.interval
         }
-        return notice_data
 
 
 class NoticeSerializer(serializers.ModelSerializer):
