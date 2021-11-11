@@ -3,6 +3,6 @@
 env/
 venv/
 *.pyc
-*.env.*
+.env.*
 .vscode
 *.log
