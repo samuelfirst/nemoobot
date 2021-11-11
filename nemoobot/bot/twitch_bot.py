@@ -1,5 +1,5 @@
-from typing import List
 from loguru import logger
+from typing import List
 
 import bot.commands as commands
 from bot.antispam import AntiSpam
@@ -102,7 +102,7 @@ class TwitchBot:
         for cmd in self.commands:
             try:
                 commands_list.append(cmd.name.lower())
-            except:
+            except AttributeError:
                 commands_list.append(f'!{cmd.__class__.__name__.lower()}')
         self.commands_list = commands_list
 
@@ -122,8 +122,6 @@ class TwitchBot:
             if cmd.match(self, user, message):
                 logger.debug(f'[{self.channel}] {cmd.__class__.__name__} command running')
                 cmd.run(self, user, message)
-            else:
-                pass
 
     def follow_notice(self, user):
         message = self.follow_notice_message.replace('<username>', user)
