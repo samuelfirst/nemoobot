@@ -6,9 +6,7 @@ services:
     build: ./web
     command: bash -c "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 web.asgi:application"
     volumes:
-      - ./web/:/usr/src/web/
-    ports:
-      - 8000:8000
+      - static_volume:/staticfiles
     env_file:
       - ./.env.docker
     depends_on:
@@ -19,8 +17,6 @@ services:
     command: celery -A web worker -Q accounts,celery -l INFO
     env_file:
       - ./.env.docker
-    volumes:
-      - ./web:/var/www/web
     links:
       - redis
 
@@ -29,8 +25,6 @@ services:
     command: celery -A web beat -l INFO
     env_file:
       - ./.env.docker
-    volumes:
-      - ./web:/var/www/web
 
   db:
     image: postgres:12.0-alpine
@@ -54,5 +48,15 @@ services:
     depends_on:
       - web
 
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/staticfiles/
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+
 volumes:
   postgres_data:
+  static_volume:
