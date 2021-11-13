@@ -21,3 +21,19 @@
 ### Пользовательские команды
 - название команды
 - текст ответа, который бот отправит в чат
+
+
+### Todo
+
+- [ ] Rewrite Readme
+- [ ] Write tests
+  - [ ] Django
+  - [ ] Bot
+- [ ] Refactor all docker files
+  - [ ] Create dev and prod configurations
+- [ ] Integratioin with Circle CI
+  - [ ] Tests
+  - [ ] Build images
+  - [ ] Push images to docker hub
+- [ ] Run in k8s
+- [ ] Change Django for something else 😂
