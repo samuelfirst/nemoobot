@@ -1,0 +1,36 @@
+# BUILDER
+# TODO use alpine image
+FROM python:3.9.0 as builder
+
+WORKDIR /usr/src/app
+
+ENV PYTHONFONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+# FINAL
+FROM python:3.9.0
+
+RUN mkdir -p /home/app \
+    && addgroup --system app && adduser --system --group app
+
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/nemoobot
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+RUN apt-get update && apt-get install -y libpq-dev
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt .
+RUN pip install --no-cache /wheels/*
+
+COPY . $APP_HOME
+
+RUN chown -R app:app $APP_HOME
+
+USER app
+
+ENTRYPOINT ["sh", "/home/app/nemoobot/entrypoint.sh"]

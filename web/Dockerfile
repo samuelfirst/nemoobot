@@ -1,4 +1,5 @@
 #pull official base image
+# TODO use alpine image
 FROM python:3.9.0
 
 #set enviroment variables

@@ -1,3 +1,4 @@
+# TODO use alpine image
 FROM python:3.9.0-alpine
 
 ENV PYTHONFONTWRITEBYTECODE 1

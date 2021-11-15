@@ -3,17 +3,21 @@ version: '3.7'
 services:
 
   web:
-    build: ./web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.prod
     command: bash -c "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 web.asgi:application"
     volumes:
-      - static_volume:/staticfiles
+      - static_volume:/home/app/web/staticfiles
     env_file:
       - ./.env.docker
     depends_on:
       - db
 
   celery:
-    build: ./web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.prod
     command: celery -A web worker -Q accounts,celery -l INFO
     env_file:
       - ./.env.docker
@@ -21,7 +25,9 @@ services:
       - redis
 
   celery-beat:
-    build: ./web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.prod
     command: celery -A web beat -l INFO
     env_file:
       - ./.env.docker
@@ -39,8 +45,11 @@ services:
     image: redis:latest
 
   bot:
-    build: ./nemoobot
+    build:
+      context: ./nemoobot
+      dockerfile: Dockerfile.prod
     command: python nemoobot.py
+    restart: always
     volumes:
       - ./nemoobot/:/usr/src/nemoobot/
     env_file:
