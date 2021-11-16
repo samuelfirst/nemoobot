@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import mocker
 
-from bot.antispam import AntiSpam
+from bot.antispam import AntiSpam, CAPS_WARNING_MESSAGE, URLS_WARNING_MESSAGE, BANNED_WORD_WARNING_MESSAGE
 
 
 @pytest.fixture
@@ -32,47 +32,29 @@ def test_check_message_return_false_if_message_clear(antispam_obj):
     assert warn_message == ''
 
 
-def test_check_message_return_true_if_caps_in_message(antispam_obj):
-    message_1 = 'ADLKADSDLA'
-    spam_detected, warn_message = antispam_obj.check_message(message_1)
+@pytest.mark.parametrize(
+    'message', ('ADLKADSDLA', 'K:LJSFASD: NAKSJDN')
+)
+def test_check_message_return_true_if_caps_in_message(antispam_obj, message):
+    spam_detected, warn_message = antispam_obj.check_message(message)
     assert spam_detected
-    assert warn_message == 'Calm down!'
+    assert warn_message == CAPS_WARNING_MESSAGE
 
-    message_2 = 'K:LJSFASD: NAKSJDN'
-    spam_detected, warn_message = antispam_obj.check_message(message_2)
+
+@pytest.mark.parametrize(
+    'message', ('twitter.com', 'www.twitter.com', 'check this link please www.example.ru')
+)
+def test_check_message_return_true_if_urls_in_message(antispam_obj, message):
+    spam_detected, warn_message = antispam_obj.check_message(message)
     assert spam_detected
-    assert warn_message == 'Calm down!'
+    assert warn_message == URLS_WARNING_MESSAGE
 
 
-def test_check_message_return_true_if_urls_in_message(antispam_obj):
-    message_1 = 'twitter.com'
-    spam_detected, warn_message = antispam_obj.check_message(message_1)
-    assert spam_detected
-    assert warn_message == 'Ссылки в чате запрещены.'
-
-    message_2 = 'www.twitter.com'
-    spam_detected, warn_message = antispam_obj.check_message(message_2)
-    assert spam_detected
-    assert warn_message == 'Ссылки в чате запрещены.'
-
-    message_3 = 'check this link please www.example.ru'
-    spam_detected, warn_message = antispam_obj.check_message(message_3)
-    assert spam_detected
-    assert warn_message == 'Ссылки в чате запрещены.'
-
-
-def test_check_message_return_true_if_banned_words(antispam_obj):
-    message_1 = 'streamer is stupid'
-    spam_detected, warn_message = antispam_obj.check_message(message_1)
-    assert spam_detected
-    assert warn_message == 'Аккуратнее с выражениями.'
-
-    message_2 = 'streamer is nigger'
-    spam_detected, warn_message = antispam_obj.check_message(message_2)
-    assert spam_detected
-    assert warn_message == 'Аккуратнее с выражениями.'
-
-    message_3 = 'this is clear message'
-    spam_detected, warn_message = antispam_obj.check_message(message_3)
-    assert spam_detected is False
-    assert warn_message == ''
+@pytest.mark.parametrize(
+    'message,expect_detected,warn',
+    (('streamer is stupid', True, BANNED_WORD_WARNING_MESSAGE), ('this is clear message', False, ''))
+)
+def test_check_message_return_true_if_banned_words(antispam_obj, message, expect_detected, warn):
+    spam_detected, warn_message = antispam_obj.check_message(message)
+    assert spam_detected is expect_detected
+    assert warn_message == warn

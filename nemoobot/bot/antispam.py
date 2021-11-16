@@ -28,6 +28,7 @@ class AntiSpam:
         return False, ''
 
     def _check_is_upper(self, message: str) -> bool:
+        # TODO use regexp to check upper case words in message
         if self.caps:
             return message.isupper()
 
