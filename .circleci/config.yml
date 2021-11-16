@@ -17,7 +17,7 @@ jobs:
         name: Tests
         command: |
          . venv/bin/activate
-          python -m pytest ./nemoobot/bot -v
+          python -m pytest -vv
 
 workflows:
   tests:
