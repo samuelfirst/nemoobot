@@ -33,12 +33,17 @@ def test_check_message_return_false_if_message_clear(antispam_obj):
 
 
 @pytest.mark.parametrize(
-    'message', ('ADLKADSDLA', 'K:LJSFASD: NAKSJDN')
+    'message,expect_detected,warn',
+    (
+        ('ADLKADSDLA', True, CAPS_WARNING_MESSAGE),
+        ('K:LJSFASD: NAKSJDN', True, CAPS_WARNING_MESSAGE),
+        ('lower words with CAPS WORDS', False, ''),
+    )
 )
-def test_check_message_return_true_if_caps_in_message(antispam_obj, message):
+def test_check_message_return_true_if_caps_in_message(antispam_obj, message, expect_detected, warn):
     spam_detected, warn_message = antispam_obj.check_message(message)
-    assert spam_detected
-    assert warn_message == CAPS_WARNING_MESSAGE
+    assert spam_detected is expect_detected
+    assert warn_message == warn
 
 
 @pytest.mark.parametrize(
