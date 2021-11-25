@@ -16,4 +16,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('webhooks/', include('twitch_webhook.urls')),
     path('api/v1/', include('api.urls'))
+    path('api/v1/accounts', include())
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

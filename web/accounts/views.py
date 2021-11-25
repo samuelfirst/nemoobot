@@ -1,11 +1,13 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from rest_framework import viewsets, permissions
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import Token, Setting, CustomCommand, Notice
-from .tasks import set_twitch_username_and_id_to_user
-from .utils import get_token_by_code, get_log_files_filenames
+from forms import CustomUserCreationForm, CustomUserChangeForm
+from models import Token, User
+from serializers import TokenSerializer, UserSerializer
+from tasks import set_twitch_username_and_id_to_user
+from utils import get_token_by_code, get_log_files_filenames
 
 
 def index(request):
@@ -57,24 +59,6 @@ def profile(request):
     return render(request, 'profile.html')
 
 
-@login_required
-def settings(request):
-    user = request.user
-    user_settings = Setting.objects.filter(user_id=user.id)
-    if user_settings.exists():
-        user_settings = user_settings.first()
-        custom_commands = CustomCommand.objects.filter(settings_id=user_settings.id)
-        notices = Notice.objects.filter(settings_id=user_settings.id)
-        context = {
-            'settings': user_settings, 'custom_commands': custom_commands,
-            'default_commands': ["uptime", "followage", "game", "title"],
-            'antispam_settings': ['urls', 'caps'], 'notices': notices
-        }
-        return render(request, 'settings.html', context)
-    else:
-        return redirect('index')
-
-
 @login_required()
 def logs(request):
     if request.user.is_staff:
@@ -89,3 +73,15 @@ def logs(request):
         return render(request, 'logs.html', context)
     else:
         return redirect('index')
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class TokenViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Token.objects.all()
+    serializer_class = TokenSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

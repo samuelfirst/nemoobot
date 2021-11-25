@@ -1,20 +1,7 @@
 from rest_framework import viewsets, permissions
 
-from .serializers import (
-    UserSerializer, TokenSerializer, SettingSerializer,
-    CustomCommandSerializer, NoticeSerializer
-)
-from accounts.models import Token, User, Setting, CustomCommand, Notice
-
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class TokenViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Token.objects.all()
-    serializer_class = TokenSerializer
+from serializers import SettingSerializer, CustomCommandSerializer, NoticeSerializer
+from models import Setting, CustomCommand, Notice
 
 
 class SettingViewSet(viewsets.ModelViewSet):
