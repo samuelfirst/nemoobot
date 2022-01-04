@@ -1,3 +1,5 @@
+// TODO
+// create endpoint to check is bot moderator in current channel
 function getChatters() {
     var method = 'GET'
     var proxyUrl = 'https://cors-anywhere.herokuapp.com/'
