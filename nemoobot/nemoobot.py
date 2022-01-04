@@ -1,10 +1,8 @@
 from twisted.internet import reactor, protocol
 from loguru import logger
 
-from bot.twitch_bot import TwitchBot
 from bot.bot_irc_client import BotIRCClient
 from bot.bot_ws_client import BotWebSocketClientFactory
-from bot.utils import load_user_settings
 
 logger.add('logs/nemoobot_logs.log', enqueue=True, format="{time} {level} | {module:<15} | {message}", level="DEBUG")
 
