@@ -12,6 +12,14 @@ services:
     depends_on:
       - db
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/data
+
   celery:
     build: ./web
     command: celery -A web worker -Q accounts,celery -l INFO
@@ -19,6 +27,7 @@ services:
       - ./.env.docker
     links:
       - redis
+      - rabbitmq
 
   celery-beat:
     build: ./web
@@ -60,3 +69,4 @@ services:
 volumes:
   postgres_data:
   static_volume:
+  rabbitmq_data:
