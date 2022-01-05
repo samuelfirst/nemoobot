@@ -2,13 +2,10 @@ from typing import List
 
 from apscheduler.schedulers.twisted import TwistedScheduler
 from twisted.words.protocols import irc
-from twisted.internet import reactor, threads, task
+from twisted.internet import reactor
 from loguru import logger
 
-from bot.config import (
-    BOT_NICKNAME, CLIENT_ID, BOT_AUTH_TOKEN,
-    WS_HOST, WS_PORT
-)
+from bot.config import BOT_NICKNAME, CLIENT_ID, BOT_AUTH_TOKEN, WS_HOST, WS_PORT, RABBITMQ_HOST, RABBITMQ_PORT
 from bot.twitch_bot import TwitchBot
 
 
@@ -16,15 +13,15 @@ class BotIRCClient(irc.IRCClient):
 
     bots: List[TwitchBot] = []
     ws_factory = None
-    is_started = False
-    scheduler = TwistedScheduler()
+    is_started: bool = False
+    scheduler: TwistedScheduler = TwistedScheduler()
 
     def __init__(self):
         self.username = BOT_NICKNAME
         self.client_id = CLIENT_ID
         self.password = BOT_AUTH_TOKEN
         # set irc attribute for websocket factory's protocol
-        self.ws_factory.protocol.irc = self
+        self.amqp.protocol.irc = self
 
     def signedOn(self):
         self.factory.wait_time = 1
@@ -39,8 +36,8 @@ class BotIRCClient(irc.IRCClient):
             self.join_bot_channel(bot)
 
         # connect to websocket
-        if self.ws_factory is not None:
-            reactor.connectTCP(WS_HOST, WS_PORT, self.ws_factory)
+        if self.amqp is not None:
+            reactor.connectTCP(RABBITMQ_HOST, RABBITMQ_PORT, self.amqp)
 
     def lineReceived(self, line):
         self.parse_line(line.decode('utf-8'))

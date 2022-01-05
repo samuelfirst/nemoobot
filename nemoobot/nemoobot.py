@@ -2,7 +2,7 @@ from twisted.internet import reactor, protocol
 from loguru import logger
 
 from bot.bot_irc_client import BotIRCClient
-from bot.bot_ws_client import BotWebSocketClientFactory
+from bot.pika_client import PikaFactory
 
 logger.add('logs/nemoobot_logs.log', enqueue=True, format="{time} {level} | {module:<15} | {message}", level="DEBUG")
 
@@ -24,7 +24,7 @@ class BotFactory(protocol.ClientFactory):
 
 
 if __name__ == '__main__':
-    BotIRCClient.ws_factory = BotWebSocketClientFactory()
+    BotIRCClient.amqp = PikaFactory()
 
     reactor.connectTCP('irc.chat.twitch.tv', 6667, BotFactory())
     reactor.run()
