@@ -3,7 +3,7 @@ from datetime import datetime
 
 import requests
 from Cryptodome.Hash import HMAC, SHA256
-from accounts.utils import send_message_to_ws
+from accounts.utils import send_message_to_queue
 
 
 def is_request_verified(request):
@@ -31,7 +31,7 @@ def process_event(event, event_type):
                 }
             }
         }
-        send_message_to_ws(message)
+        send_message_to_queue(message)
 
 
 def twitch_time_to_datetime(twitch_time: str):

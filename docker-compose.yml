@@ -35,6 +35,15 @@ services:
     env_file:
       - ./.env.docker
 
+  consumer:
+    build: ./web
+    command: python3 consumer.py
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - bot
+      - rabbitmq
+
   db:
     image: postgres:12.0-alpine
     volumes:

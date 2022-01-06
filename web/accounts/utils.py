@@ -1,11 +1,11 @@
+import json
 import os
 import time
 from typing import List
 
+import pika
 import requests
 from django.conf import settings
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 
 
 def get_token_by_code(code):
@@ -39,10 +39,21 @@ def get_list_user_settings():
     return res.json()
 
 
-def send_message_to_ws(message):
-    print('sending message to ws')
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)("bot_commands", message)
+def send_message_to_queue(message):
+    print('sending message to queue')
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(
+            host=settings.RABBITMQ_HOST,
+            virtual_host="/",
+            credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASS)
+        )
+    )
+    channel = connection.channel()
+    channel.basic_publish(
+        exchange=settings.RABBITMQ_BASE_EXCHANGE, routing_key=settings.RABBITMQ_BOT_QUEUE, body=json.dumps(message).encode()
+    )
+    print(" [x] Sent message")
+    connection.close()
 
 
 def get_app_token():

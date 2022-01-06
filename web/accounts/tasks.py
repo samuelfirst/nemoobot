@@ -7,7 +7,7 @@ from celery import shared_task
 from twitch_webhook.tasks import create_subscription
 from .models import User, Token, Notice
 from .utils import (
-    get_user_settings_by_id, get_list_user_settings, send_message_to_ws,
+    get_user_settings_by_id, get_list_user_settings, send_message_to_queue,
     get_app_token
 )
 
@@ -86,6 +86,7 @@ def send_command_to_bot(command: str, settings_id: int = None) -> str:
             }
         }
     else:
+        # TODO fix this shit
         list_settings = get_list_user_settings()
         print(list_settings)
         if list_settings:
@@ -98,7 +99,7 @@ def send_command_to_bot(command: str, settings_id: int = None) -> str:
             }
         else:
             return
-    send_message_to_ws(message)
+    send_message_to_queue(message)
     return 'Message sent to ws'
 
 
@@ -134,4 +135,4 @@ def send_job_command_to_bot(command: str, notice_id: int) -> None:
                 "args": args
             }
         }
-    send_message_to_ws(message)
+    send_message_to_queue(message)

@@ -49,8 +49,7 @@ def connect_to_twicth(request):
 
 
 def check_is_bot_moderator(request):
-    # TODO
-    # create endpoint to check is bot moderator in current channel
+    # TODO create endpoint to check is bot moderator in current channel
     user = request.user
     channel = user.twitch_username
 

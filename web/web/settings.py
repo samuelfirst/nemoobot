@@ -186,3 +186,11 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 CELERY_ENABLE_UTC = True
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', 5672))
+RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
+RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'guest')
+RABBITMQ_BASE_EXCHANGE = os.getenv('RABBITMQ_BASE_EXCHANGE', 'messages')
+RABBITMQ_BOT_QUEUE = os.getenv('RABBITMQ_BOT_QUEUE', 'command_to_bot')
+RABBITMQ_BACKEND_QUEUE = os.getenv('RABBITMQ_BACKEND_QUEUE', 'command_from_bot')
