@@ -17,6 +17,21 @@ from bot.twitch_bot import TwitchBot
 PREFETCH_COUNT = 10
 
 
+class MessageType:
+    command = 'command'
+
+
+class CommandType:
+    start_bot = 'start_bot'
+    init = 'INIT'
+    reload = 'RELOAD'
+    add = 'ADD'
+    delete = 'DELETE'
+    new_follow = 'NEW_FOLLOW'
+    add_job = 'ADD_JOB'
+    remove_job = 'REMOVE_JOB'
+
+
 class PikaProtocol(twisted_connection.TwistedProtocolConnection):
     connected = False
     name = 'AMQP:Protocol'
@@ -40,16 +55,7 @@ class PikaProtocol(twisted_connection.TwistedProtocolConnection):
             yield self.setup_read(exchange, routing_key, callback)
 
         if not self.irc.is_started and not self.irc.bots:
-            payload = {
-                'type': 'command',
-                'data': {
-                    'command': 'start_bot',
-                    'args': {},
-                }
-            }
-
-            self.send_message(RABBITMQ_BASE_EXCHANGE, RABBITMQ_BACKEND_QUEUE, json.dumps(payload).encode('utf8'))
-            logger.info('Send start_bot command to backend')
+            self.send_command(CommandType.start_bot, {})
             self.irc.is_started = True
             self.setup_read(RABBITMQ_BASE_EXCHANGE, RABBITMQ_BOT_QUEUE, self._process_command)
 
@@ -140,34 +146,46 @@ class PikaProtocol(twisted_connection.TwistedProtocolConnection):
         except Exception as error:  # pylint: disable=W0703
             logger.info('Error while sending message: %s' % error, system=self.name)
 
+    def send_command(self, command: str, data: dict) -> None:
+        payload = {
+            'type': MessageType.command,
+            'data': {
+                'command': command,
+                'args': data,
+            }
+        }
+
+        self.send_message(RABBITMQ_BASE_EXCHANGE, RABBITMQ_BACKEND_QUEUE, json.dumps(payload).encode('utf8'))
+        logger.info(f'Send command: "{command}", args: {data} to backend')
+
     def _process_command(self, msg):
         message = json.loads(msg[3].decode())
-        if message['type'] == 'command':
+        if message['type'] == MessageType.command:
             data = message['data']
             command = data['command']
             args = data['args']
             try:
-                if command == 'INIT':
+                if command == CommandType.init:
                     for settings in args:
                         bot = TwitchBot(**settings)
                         self.irc.add_bot(bot)
-                elif command == 'RELOAD':
+                elif command == CommandType.reload:
                     self.irc.reload_bot(args)
-                elif command == 'ADD':
+                elif command == CommandType.add:
                     bot = TwitchBot(**args)
                     self.irc.add_bot(bot)
-                elif command == 'DELETE':
+                elif command == CommandType.delete:
                     bot = TwitchBot(**args)
                     self.irc.delete_bot(bot)
-                elif command == 'NEW_FOLLOW':
+                elif command == CommandType.new_follow:
                     for bot in self.irc.bots:
                         if bot.channel_id == args.get('twitch_user_id'):
                             user = args.get("follower_name")
                             if bot.is_follow_notice_active:
                                 bot.follow_notice(user)
-                elif command == 'ADD_JOB':
+                elif command == CommandType.add_job:
                     self.irc.add_bot_job(args)
-                elif command == 'REMOVE_JOB':
+                elif command == CommandType.remove_job:
                     self.irc.remove_bot_job(args)
             except KeyError as err:
                 logger.error(err)
