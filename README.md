@@ -1,5 +1,5 @@
 # Nemoobot
-<a href="https://nemoobot.ru">Nemoobot</a> это чат бот для Twitch каналов.
+Nemoobot это чат бот для Twitch каналов.
 ## Функционал
 ### Встроенные команды
 - `!uptime` получить время, которое стрим находится онлайн
@@ -36,4 +36,4 @@
   - [ ] Build images
   - [ ] Push images to docker hub
 - [ ] Run in k8s
-- [ ] Change Django for something else 😂
+- [ ] Change Django for something else 
