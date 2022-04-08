@@ -122,6 +122,9 @@ class TwitchBot:
             if cmd.match(self, user, message):
                 logger.debug(f'[{self.channel}] {cmd.__class__.__name__} command running')
                 cmd.run(self, user, message)
+                return
+        self.write('Unknown command.')
+        self.write(f'Commands list: {", ".join(self.commands_list)}')
 
     def follow_notice(self, user):
         message = self.follow_notice_message.replace('<username>', user)

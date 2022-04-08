@@ -18,7 +18,7 @@ class TokenViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SettingViewSet(viewsets.ModelViewSet):
-    queryset = Setting.objects.all()
+    queryset = Setting.objects.all().exclude(user__twitch_username='')
     serializer_class = SettingSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 

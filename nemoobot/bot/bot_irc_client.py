@@ -96,6 +96,7 @@ class BotIRCClient(irc.IRCClient):
                 logger.info(f'Bot leave {bot.channel}!')
 
     def reload_bot(self, args):
+        # TODO fix bug if twitch_user_id is None or ''
         for bot in self.bots:
             if bot.channel_id == args['user']['twitch_user_id']:
                 bot.reload(**args)

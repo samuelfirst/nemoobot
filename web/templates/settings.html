@@ -121,11 +121,10 @@
                     </div>
                     {% endfor %}
                     {% endif %}
-                    <h2>Add new notification</h2>
                     <div class="input-group mb-3">
                         <input type="text" class="form-control bg-dark text-light" style="width: 50%;" placeholder="text" name="new_notice_text" aria-label="NoticeText" required>
                         <input type="number" class="form-control bg-dark text-light" placeholder="interval in minutes" name="new_notice_interval" aria-label="NoticeInterval" required>
-                        <button type="button" onclick="addNewNotice(this.closest('form'))"  class="btn btn-light" style="width: 175px;">Add new notification</button>
+                        <button type="button" onclick="addNewNotice(this.closest('form'))"  class="btn btn-light" style="width: 175px;">Add</button>
                     </div>
                 </div>
             </div>
@@ -145,12 +144,11 @@
                     </div>
                     {% endfor %}
                     {% endif %}
-                    <h2>Add new custom commands</h2>
                     <div class="input-group mb-3">
                         <span class="input-group-text">!</span>
                         <input type="text" class="form-control bg-dark text-light" placeholder="command" name="new_cmd_name" aria-label="CmdName" required>
                         <input class="form-control bg-dark text-light" placeholder="reply text" name="new_cmd_reply" aria-label="CmdReply" required>
-                        <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-light" style="width: 170px;">Add new command</button>
+                        <button type="button" onclick="addNewCustomCommand(this.closest('form'))"  class="btn btn-light" style="width: 170px;">Add</button>
                     </div>
                 </div>
             </div>

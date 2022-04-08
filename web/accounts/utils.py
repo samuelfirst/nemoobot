@@ -28,19 +28,21 @@ def get_token_by_code(code):
 
 
 def get_user_settings_by_id(settings_id):
+    # TODO remove this shit
     url = f'{settings.BASE_API_URL}settings/{settings_id}'
     res = requests.get(url)
     return res.json()
 
 
 def get_list_user_settings():
+    # TODO remove this shit
     url = f'{settings.BASE_API_URL}settings/'
     res = requests.get(url)
     return res.json()
 
 
 def send_message_to_queue(message):
-    print('sending message to queue')
+    print('sending mesasge to queue. Message: {message}')
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
             host=settings.RABBITMQ_HOST,
@@ -50,9 +52,11 @@ def send_message_to_queue(message):
     )
     channel = connection.channel()
     channel.basic_publish(
-        exchange=settings.RABBITMQ_BASE_EXCHANGE, routing_key=settings.RABBITMQ_BOT_QUEUE, body=json.dumps(message).encode()
+        exchange=settings.RABBITMQ_BASE_EXCHANGE,
+        routing_key=settings.RABBITMQ_BOT_QUEUE,
+        body=json.dumps(message).encode(),
     )
-    print(" [x] Sent message")
+    print("[x] Sent message")
     connection.close()
 
 

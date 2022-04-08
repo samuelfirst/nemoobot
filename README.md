@@ -31,9 +31,11 @@ Nemoobot это чат бот для Twitch каналов.
   - [ ] Bot
 - [ ] Refactor all docker files
   - [ ] Create dev and prod configurations
-- [ ] Integratioin with Circle CI
+- [ ] CI/CD
   - [ ] Tests
   - [ ] Build images
   - [ ] Push images to docker hub
 - [ ] Run in k8s
-- [ ] Change Django for something else 
+- [ ] Change Django with something else
+
+# !!! BURN IT ALL DOWN AND ONE DAY CREATE FROM SCRATCH !!!

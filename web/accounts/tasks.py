@@ -76,6 +76,7 @@ def check_twitch_access_token_freshness() -> None:
 
 @shared_task
 def send_command_to_bot(command: str, settings_id: int = None) -> str:
+    print(settings_id)
     if settings_id is not None:
         settings = get_user_settings_by_id(settings_id)
         message = {
